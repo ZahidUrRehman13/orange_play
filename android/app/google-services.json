@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "686567114158",
+    "project_id": "orange-76d99",
+    "storage_bucket": "orange-76d99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686567114158:android:0c0450fad109a60e86b43f",
+        "android_client_info": {
+          "package_name": "com.orange.play.orange_play"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "686567114158-lla9qloa500t3mtmr74gjttjtie47lmk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBo-t62dTjtuiLGAPKQhV3rpmuHs9UwSyg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "686567114158-lla9qloa500t3mtmr74gjttjtie47lmk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
