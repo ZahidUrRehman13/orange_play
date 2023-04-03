@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:open_share_pro/open.dart';
 import 'package:orange_play/Authentications/login_screen.darts.dart';
 import 'package:orange_play/mix_screens/user_chat_screen.dart';
@@ -13,7 +14,15 @@ import '../constants_services/colors_class.dart';
 import '../providers/user_provider.dart';
 
 class PostDetails extends StatefulWidget {
-  const PostDetails({Key? key}) : super(key: key);
+  String imageUrl;
+  String description;
+  String jobTitle;
+  dynamic timePublished;
+  String phone;
+  String postedBy;
+  String chatId;
+   PostDetails({Key? key,required this.imageUrl, required this.description,required this.jobTitle, required this.timePublished, required this.phone,
+   required this.postedBy, required this.chatId}) : super(key: key);
 
   @override
   State<PostDetails> createState() => _PostDetailsState();
@@ -39,6 +48,50 @@ class _PostDetailsState extends State<PostDetails> {
     var width = MediaQuery.of(context).size.width;
     return  Scaffold(
       backgroundColor: AllColors.mainColor,
+      appBar: AppBar(
+        backgroundColor: AllColors.mainColor,
+        elevation: 0.0,
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black54,
+            )),
+        actions: [
+          IconButton(
+            onPressed: (){
+              if(  context
+                  .read<UserProvider>()
+                  .UserEmail
+                  .toString() != ""){
+                Transitioner(
+                  context: context,
+                  child:  UserChatScreen(PostID: widget.chatId),
+                  animation: AnimationType.fadeIn, // Optional value
+                  duration:
+                  const Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              }else{
+                Transitioner(
+                  context: context,
+                  child: const LoginScreen(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration:
+                  const Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              }
+            },
+            icon: Icon(Icons.chat,color: Colors.green,
+              size: height*width*0.0001,),
+          )
+        ],
+      ),
       body: SingleChildScrollView(
 
         child: SafeArea(
@@ -48,55 +101,26 @@ class _PostDetailsState extends State<PostDetails> {
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      child: Container(
-                        height: height*0.4,
-                        width: width,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            image: DecorationImage(
-                                image: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
-                                fit: BoxFit.cover
-                            )
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: height*0.01,
-                        left: width*0.87,
-                        child: GestureDetector(
-                          onTap: (){
-                            if(  context
-                                .read<UserProvider>()
-                                .UserEmail
-                                .toString() != ""){
-                              Transitioner(
-                                context: context,
-                                child:  UserChatScreen(PostID: '13'),
-                                animation: AnimationType.fadeIn, // Optional value
-                                duration:
-                                const Duration(milliseconds: 1000), // Optional value
-                                replacement: false, // Optional value
-                                curveType: CurveType.decelerate, // Optional value
-                              );
-                            }else{
-                              Transitioner(
-                                context: context,
-                                child: const LoginScreen(),
-                                animation: AnimationType.slideLeft, // Optional value
-                                duration:
-                                const Duration(milliseconds: 1000), // Optional value
-                                replacement: false, // Optional value
-                                curveType: CurveType.decelerate, // Optional value
-                              );
-                            }
-                          },
-                          child: Icon(Icons.chat,color: Colors.green,
-                          size: height*width*0.0001,),
-                        ))
-                  ],
+                child: Container(
+                  height: height*0.4,
+                  width: width,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(5),
+                      image: DecorationImage(
+                          image: NetworkImage(widget.imageUrl),
+                          fit: BoxFit.fitWidth
+                      )
+                  ),
+                ),
+              ),
+              Opacity(
+                opacity : 0.5,
+                child:   Container(
+                    width: 427.5,
+                    height: 1,
+                    decoration: BoxDecoration(
+                        color: const Color(0xffbcbcbc)
+                    )
                 ),
               ),
               Padding(
@@ -127,7 +151,7 @@ class _PostDetailsState extends State<PostDetails> {
                             textAlign: TextAlign.left
                         ),
                         SizedBox(width: width*0.02,),
-                        Text("Joula Angella",style: const TextStyle(
+                        Text(widget.postedBy,style: const TextStyle(
                             color:  const Color(0xff202124),
                             fontWeight: FontWeight.w700,
                             fontFamily: "Neckar",
@@ -138,7 +162,7 @@ class _PostDetailsState extends State<PostDetails> {
                     ),
                     GestureDetector(
                       onTap: (){
-                        Open.mail(toAddress: "zahidrehman507@gmail.com", subject: "Orange Team", body: " ");
+                        Open.mail(toAddress: email!.toString(), subject: " ", body: " ");
                       },
                       child: Column(
                         children: [
@@ -174,13 +198,29 @@ class _PostDetailsState extends State<PostDetails> {
                   ],
                 ),
               ),
+              Opacity(
+                opacity : 0.5,
+                child:   Container(
+                    width: 427.5,
+                    height: 1,
+                    decoration: BoxDecoration(
+                        color: const Color(0xffbcbcbc)
+                    )
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("This is the finance minsiter advertisement"
-                    " paper for checking the reality "
-                    "of the people in the field"
-                    " of ramadan in Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut arcu libero, pulvinar non massa sed, accumsan scelerisque dui. Morbi purus mauris, vulputate quis felis nec, fermentum aliquam orci. Quisque ornare iaculis placerat. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. In commodo sem arcu, sed fermentum tortor consequat vel. Phasellus lacinia quam quis leo tincidunt vehicula.",
+                child: Center(
+                  child: Text(
+                    widget.description,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 8,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
+              ),
+              SizedBox(
+                height: height*0.1,
               ),
               Opacity(
                 opacity : 0.5,
@@ -212,15 +252,15 @@ class _PostDetailsState extends State<PostDetails> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("Job Android Developer "),
+                      Text(widget.jobTitle),
                       SizedBox(height: height*0.03,),
-                      Text("16/12/2023, 2:20 pm"),
+                      Text(parseTimeStamp(widget.timePublished)),
                           ],
                   )
 
                 ],
               ),
-              SizedBox(height: height*0.03,),
+              SizedBox(height: height*0.04,),
               Center(
                 child: MaterialButton(
                     shape: RoundedRectangleBorder(
@@ -234,10 +274,10 @@ class _PostDetailsState extends State<PostDetails> {
                       _showSimpleDialog();
 
                     },
-                    child:  Text("056 1150021",style: TextStyle(color: Colors.white,fontSize:width*0.04 ),)
+                    child:  Text(widget.phone,style: TextStyle(color: Colors.white,fontSize:width*0.04 ),)
                 ),
               ),
-              SizedBox(height: height*0.03,),
+              SizedBox(height: height*0.02,),
 
             ],
           ) ,
@@ -258,7 +298,7 @@ class _PostDetailsState extends State<PostDetails> {
             children: <Widget>[
               GestureDetector(
                 onTap: (){
-                  Open.whatsApp(whatsAppNumber: "+971561150021", text: "Hi");
+                  Open.whatsApp(whatsAppNumber: widget.phone, text: "");
                   Navigator.pop(context);
                 },
                 child: Row(
@@ -268,7 +308,7 @@ class _PostDetailsState extends State<PostDetails> {
                     Icon(Icons.whatsapp,color: Colors.green,),
                     SimpleDialogOption(
                       onPressed: () {
-                        Open.whatsApp(whatsAppNumber: "+971561150021", text: "Hi");
+                        Open.whatsApp(whatsAppNumber: widget.phone, text: "");
                         Navigator.pop(context);
                       },
                       child: const Text('Open in Whatsapp'),
@@ -279,7 +319,7 @@ class _PostDetailsState extends State<PostDetails> {
               SizedBox(height: height*0.03,),
               GestureDetector(
                 onTap: (){
-                  Open.phone(phoneNumber: "+971561150021");
+                  Open.phone(phoneNumber: widget.phone);
                   Navigator.pop(context);
                 },
                 child: Row(
@@ -289,7 +329,7 @@ class _PostDetailsState extends State<PostDetails> {
                     Icon(Icons.phone,color: Colors.green,),
                     SimpleDialogOption(
                       onPressed: () {
-                        Open.phone(phoneNumber: "+971561150021");
+                        Open.phone(phoneNumber: widget.phone);
                         Navigator.pop(context);
                       },
                       child: const Text('Phone Call'),
@@ -307,7 +347,7 @@ class _PostDetailsState extends State<PostDetails> {
                       .toString() != ""){
                     Transitioner(
                       context: context,
-                      child:  UserChatScreen(PostID: '13'),
+                      child:  UserChatScreen(PostID: widget.chatId),
                       animation: AnimationType.slideLeft, // Optional value
                       duration:
                       const Duration(milliseconds: 1000), // Optional value
@@ -342,7 +382,7 @@ class _PostDetailsState extends State<PostDetails> {
                             .toString() != ""){
                           Transitioner(
                             context: context,
-                            child:  UserChatScreen(PostID: '13'),
+                            child:  UserChatScreen(PostID: widget.chatId),
                             animation: AnimationType.slideLeft, // Optional value
                             duration:
                             const Duration(milliseconds: 1000), // Optional value
@@ -370,6 +410,12 @@ class _PostDetailsState extends State<PostDetails> {
             ],
           );
         });
+  }
+
+  String parseTimeStamp(int value) {
+    var date = DateTime.fromMillisecondsSinceEpoch(value );
+    var d12 = DateFormat('MM-dd-yyyy, hh:mm a').format(date);
+    return d12;
   }
 
 

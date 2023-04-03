@@ -58,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .collection("Home")
         .doc(context.read<UserProvider>().UserEmail)
         .collection("data")
+        .orderBy("time", descending: true)
         .snapshots(); //retrieve all clients
 
     stream!.listen((data) {
@@ -221,7 +222,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: (){
                           Transitioner(
                             context: context,
-                            child: PostDetails(),
+                            child: PostDetails(
+                              imageUrl: snapshot.data.docs[index]['url'],
+                            description: snapshot.data.docs[index]['description'],
+                            jobTitle:snapshot.data.docs[index]['title'],
+                            timePublished:snapshot.data.docs[index]['time'],
+                            phone:snapshot.data.docs[index]['phone'],
+                            postedBy:snapshot.data.docs[index]['postedby'],
+                            chatId:snapshot.data.docs[index]['chat_id'],),
                             animation: AnimationType
                                 .slideLeft, // Optional value
                             duration: Duration(
