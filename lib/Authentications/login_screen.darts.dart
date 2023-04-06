@@ -6,12 +6,13 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:orange_play/constants_services/colors_class.dart';
+import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:orange_play/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transitioner/transitioner.dart';
 
-import '../mix_screens/user_chat_screen.dart';
+import '../mix_screens/chats/user_chat_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -396,7 +397,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void navigate() {
     Transitioner(
       context: context,
-      child:  UserChatScreen(PostID: '13'),
+      child:  HomeScreen(),
       animation: AnimationType.slideLeft, // Optional value
       duration: const Duration(milliseconds: 1000), // Optional value
       replacement: true, // Optional value

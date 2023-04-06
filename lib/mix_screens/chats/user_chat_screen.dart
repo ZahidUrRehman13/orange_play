@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:transitioner/transitioner.dart';
-import '../providers/user_provider.dart';
+import '../../providers/user_provider.dart';
 
 class UserChatScreen extends StatefulWidget {
   String PostID;
@@ -69,6 +69,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
   void dispose() {
     _controller.close();
     _messageController.dispose();
+    super.dispose();
   }
 
   @override

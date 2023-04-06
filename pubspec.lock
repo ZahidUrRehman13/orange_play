@@ -265,6 +265,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  flutter_expandable_fab:
+    dependency: "direct main"
+    description:
+      name: flutter_expandable_fab
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.1"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -778,7 +785,7 @@ packages:
     source: hosted
     version: "3.0.5"
   uuid:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uuid
       url: "https://pub.dartlang.org"

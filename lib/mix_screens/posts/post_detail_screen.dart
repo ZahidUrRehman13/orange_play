@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -5,13 +6,13 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:open_share_pro/open.dart';
 import 'package:orange_play/Authentications/login_screen.darts.dart';
-import 'package:orange_play/mix_screens/user_chat_screen.dart';
+import 'package:orange_play/mix_screens/chats/user_chat_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transitioner/transitioner.dart';
 
-import '../constants_services/colors_class.dart';
-import '../providers/user_provider.dart';
+import '../../constants_services/colors_class.dart';
+import '../../providers/user_provider.dart';
 
 class PostDetails extends StatefulWidget {
   String imageUrl;
@@ -99,18 +100,15 @@ class _PostDetailsState extends State<PostDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  height: height*0.4,
-                  width: width,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      image: DecorationImage(
-                          image: NetworkImage(widget.imageUrl),
-                          fit: BoxFit.fitWidth
-                      )
-                  ),
+              Container(
+                height: height*0.4,
+                width: width,
+                decoration: BoxDecoration(
+                    // borderRadius: BorderRadius.circular(5),
+                    image: DecorationImage(
+                        image: NetworkImage(widget.imageUrl),
+                        fit: BoxFit.fill
+                    )
                 ),
               ),
               Opacity(
@@ -128,15 +126,32 @@ class _PostDetailsState extends State<PostDetails> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(
-                      radius: height*width*0.000045,
-                      backgroundColor: const Color(0xff3a6c83),
-                      child: CircleAvatar(
-                        backgroundImage: NetworkImage("https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
-                        radius: height*width*0.00004,
-                      ),
-                    ),
-
+                    StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('Profile')
+                            .doc("images")
+                            .collection("data")
+                            .doc(context.read<UserProvider>().UserEmail)
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return    CircleAvatar(
+                              radius: height*width*0.000045,
+                              backgroundColor: const Color(0xff3a6c83),
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(snapshot
+                                    .data!["profile_image_url"]
+                                    .toString()),
+                                radius: height*width*0.00004,
+                              ),
+                            );
+                          }
+                          return CircleAvatar(
+                            radius: height*width*0.000045,
+                            backgroundImage: NetworkImage(
+                                "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
+                          );
+                        }),
                     Row(
                       children: [
                         Text(
@@ -251,6 +266,7 @@ class _PostDetailsState extends State<PostDetails> {
                   SizedBox(width: width*0.03,),
                   Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(widget.jobTitle),
                       SizedBox(height: height*0.03,),
@@ -261,20 +277,23 @@ class _PostDetailsState extends State<PostDetails> {
                 ],
               ),
               SizedBox(height: height*0.04,),
-              Center(
-                child: MaterialButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-
-                    ),
-                    color:const Color(0xff3a6c83),
-                    minWidth: width*0.7,
+              GestureDetector(
+                onTap: (){
+                  _showSimpleDialog();
+                },
+                child: Center(
+                  child: Container(
+                    width: width*0.7,
                     height: height*0.05,
-                    onPressed: (){
-                      _showSimpleDialog();
-
-                    },
-                    child:  Text(widget.phone,style: TextStyle(color: Colors.white,fontSize:width*0.04 ),)
+                    child:  Center(child: Text(widget.phone,style: TextStyle(color: Colors.white,fontSize:width*0.04 ),)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                      gradient: const LinearGradient(
+                          begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                          end: Alignment(1.3960868120193481, 1.4281718730926514),
+                          colors: [Color(0xff4a54be), Color(0xff48bc71)]),
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: height*0.02,),

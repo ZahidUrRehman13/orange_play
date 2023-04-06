@@ -14,9 +14,10 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transitioner/transitioner.dart';
-import '../constants_services/colors_class.dart';
-import '../providers/user_provider.dart';
-import 'home_screens.dart';
+import 'package:uuid/uuid.dart';
+import '../../constants_services/colors_class.dart';
+import '../../providers/user_provider.dart';
+import '../../menu_screens/home_screens.dart';
 
 class AdvertisementPage extends StatefulWidget {
   const AdvertisementPage({Key? key}) : super(key: key);
@@ -38,6 +39,8 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? phone;
   String? country = '+971';
+  var UniqueIDs;
+  var uuid;
 
   TextEditingController? _bookTitleController;
   TextEditingController? _descriptionController;
@@ -46,9 +49,11 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   @override
   void initState() {
     super.initState();
+     uuid = Uuid();
     _bookTitleController = new TextEditingController();
     _descriptionController = new TextEditingController();
     _phoneController = TextEditingController();
+    _generateUniqueIDs();
   }
 
   @override
@@ -92,7 +97,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                         filled: true,
                         fillColor: Color(0xffebf5f9),
                         // labelText: widget.labelText,
-                        hintText: "Product Name",
+                        hintText: "Advertisement Title",
                         hintStyle: const TextStyle(),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(
@@ -111,48 +116,12 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                       ),
                     ),
                   ),
-                  Container(
-                    margin: EdgeInsets.only(
-                        top: height * 0.015,
-                        left: width * 0.02,
-                        right: width * 0.02),
-                    height: height * 0.35,
-                    width: width * 0.9,
-                    child: TextFormField(
-                      key: _descriptionKey,
-                      controller: _descriptionController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 10,
-                      textInputAction: TextInputAction.next,
-                      cursorColor: Colors.black,
-                      validator: validateDescription,
-                      decoration: InputDecoration(
-                          filled: true,
-                          fillColor: Color(0xffebf5f9),
-                          // labelText: widget.labelText,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 2,
-                              color: Colors.black12,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              width: 2,
-                              color: Colors.black12,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          hintText: "Description"),
-                    ),
-                  ),
                   Padding(
                     padding: EdgeInsets.only(
                       top: height * 0.02,
                       left: width * 0.06,
                       right: width * 0.06,
-                      bottom: height * 0.05,
+                      bottom: height * 0.02,
                     ),
                     child: Container(
                       height: height * 0.095,
@@ -195,7 +164,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                           ),
                           errorBorder: const OutlineInputBorder(
                               borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                              BorderRadius.all(Radius.circular(10)),
                               borderSide: BorderSide(
                                 width: 1,
                                 color: Colors.red,
@@ -207,7 +176,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                               color: Colors.red,
                             ),
                           ),
-                          hintText: "Contact Number",
+                          hintText: "Verified Phone Number",
                         ),
                         onChanged: (phone) {
                           print(phone.completeNumber);
@@ -220,13 +189,49 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                       ),
                     ),
                   ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: width * 0.02,
+                        right: width * 0.02),
+                    height: height * 0.35,
+                    width: width * 0.9,
+                    child: TextFormField(
+                      key: _descriptionKey,
+                      controller: _descriptionController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 11,
+                      textInputAction: TextInputAction.next,
+                      cursorColor: Colors.black,
+                      validator: validateDescription,
+                      decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Color(0xffebf5f9),
+                          // labelText: widget.labelText,
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black12,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              width: 2,
+                              color: Colors.black12,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          hintText: "Description"),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () async {
                       _getFromGallery();
                     },
                     child: Container(
                       margin: EdgeInsets.only(
-                          left: width * 0.01, right: width * 0.01),
+                          left: width * 0.01,
+                          right: width * 0.01),
                       height: height * 0.35,
                       width: width * 0.9,
                       child: Center(
@@ -274,17 +279,12 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                   SizedBox(
                     height: height * 0.04,
                   ),
-                  MaterialButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      color: const Color(0xff3a6c83),
-                      minWidth: width * 0.9,
-                      height: height * 0.07,
-                      onPressed: () {
+                  GestureDetector(
+                    onTap: (){
+
                         if (imageUrl == "" || imageUrl == null) {
                           Fluttertoast.showToast(
-                              backgroundColor: Colors.black,
+                            backgroundColor: Colors.black,
                             textColor: Colors.white,
                             gravity: ToastGravity.CENTER,
                             msg: "Please upload Image first",);
@@ -303,12 +303,26 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                               msg: "Please fill all the fields",);
                           }
                         }
-                      },
-                      child: Text(
-                        "Advertise",
-                        style: TextStyle(
-                            color: Colors.white, fontSize: width * 0.04),
-                      )),
+                    },
+                    child: Center(
+                      child: Container(
+                        width: width * 0.9,
+                        height: height * 0.07,
+                        child: Center(child: Text(
+                          "Advertise",
+                          style: TextStyle(
+                              color: Colors.white, fontSize: width * 0.04),
+                        ),),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          gradient: const LinearGradient(
+                              begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                              end: Alignment(1.3960868120193481, 1.4281718730926514),
+                              colors: [Color(0xff4a54be), Color(0xff48bc71)]),
+                        ),
+                      ),
+                    ),
+                  ),
                   SizedBox(
                     height: height * 0.02,
                   ),
@@ -368,22 +382,29 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     }
   }
 
+  _generateUniqueIDs(){
+    UniqueIDs= context.read<UserProvider>().UserEmail!.toString()+uuid.v1();
+  }
+
   sendPost() async {
     setState(() {
       _isLoading = true;
     });
     _firestore
         .collection("Home")
-        .doc(context.read<UserProvider>().UserEmail!.toString())
+        .doc("Upload")
         .collection("data")
-        .add({
+        .doc(UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),
+      "post_id": UniqueIDs,
       "title": _bookTitleController!.text.trim().toString(),
       "time": DateTime.now().millisecondsSinceEpoch,
       "url": imageUrl,
       "phone": "${country! + _phoneController!.text}",
       "postedby": context.read<UserProvider>().UserEmail!.toString(),
       "chat_id": context.read<UserProvider>().UserEmail!.toString()+_diceface.toString(),
+      "likes": 0,
+      "views":0,
     });
     setState(() {
       _isLoading = false;

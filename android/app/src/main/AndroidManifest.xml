@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.orange.play.orange_play">
    <application
-        android:label="World Jobs"
+        android:label="𝘦𝘈𝘥𝘷𝘦𝘳𝘵𝘪𝘴𝘦"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
