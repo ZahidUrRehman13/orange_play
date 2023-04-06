@@ -31,6 +31,7 @@ class PostDetails extends StatefulWidget {
 
 class _PostDetailsState extends State<PostDetails> {
   String? email;
+  String? userID;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _PostDetailsState extends State<PostDetails> {
   getEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     email = prefs.getString('email');
+    userID = await FirebaseAuth.instance.currentUser!.uid;
   }
 
   @override
@@ -146,23 +148,25 @@ class _PostDetailsState extends State<PostDetails> {
                             .doc(context.read<UserProvider>().UserEmail)
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return    CircleAvatar(
-                              radius: height*width*0.000045,
-                              backgroundColor: const Color(0xff3a6c83),
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(snapshot
-                                    .data!["profile_image_url"]
-                                    .toString()),
-                                radius: height*width*0.00004,
-                              ),
-                            );
-                          }
-                          return CircleAvatar(
+
+                          return snapshot.hasData
+                              ? CircleAvatar(
+                            radius: height*width*0.000045,
+                            backgroundColor: const Color(0xff3a6c83),
+                            child: CircleAvatar(
+                              backgroundImage: NetworkImage(snapshot
+                                  .data!["profile_image_url"]
+                                  .toString()),
+                              radius: height*width*0.00004,
+                            ),
+                          )
+                              : CircleAvatar(
                             radius: height*width*0.000045,
                             backgroundImage: NetworkImage(
                                 "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
                           );
+
+
                         }),
                     Row(
                       children: [

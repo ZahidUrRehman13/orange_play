@@ -79,6 +79,14 @@ class _UserChatScreenState extends State<UserChatScreen> {
     var _width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Group Chat",
+            style: TextStyle(
+              fontFamily: 'Lato',
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.normal,
+            )),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);

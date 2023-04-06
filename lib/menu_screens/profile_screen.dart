@@ -37,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController? _emailController;
   TextEditingController? _phoneController;
   var user;
+  String? userID;
   bool _isProgress= false;
 
   @override
@@ -50,9 +51,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   initFirebase()async{
+
     user = await FirebaseAuth.instance.currentUser;
     _emailController!.text=FirebaseAuth.instance.currentUser!.email.toString();
     _phoneController!.text=FirebaseAuth.instance.currentUser!.email.toString();
+
   }
 
   @override
@@ -130,41 +133,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           .doc(context.read<UserProvider>().UserEmail)
                           .snapshots(),
                       builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return _isLoading
-                              ? CircleAvatar(
-                                  radius: _height * _width * 0.0002,
-                                  child: Center(
-                                    child: CupertinoActivityIndicator(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : Stack(
-                                children: [
-                                  Positioned(
-                                    child: CircleAvatar(
-                                        radius: _height * _width * 0.0002,
-                                        backgroundImage: NetworkImage(snapshot
-                                            .data!["profile_image_url"]
-                                            .toString()),
-                                      ),
-                                  ),
-                                  Positioned(
-                                    child: CircleAvatar(
-                                        child: Icon(Icons.camera,color: Colors.white,),
-                                    radius: _height*_width*0.00005,),
-                                    top: _height*0.11,
-                                    left: _width*0.24,
-                                  )
-                                ],
-                              );
-                        }
-                        return CircleAvatar(
+
+                        return snapshot.hasData
+                            ? _isLoading
+                            ? CircleAvatar(
                           radius: _height * _width * 0.0002,
-                          backgroundImage: NetworkImage(
-                              "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
+                          child: Center(
+                            child: CupertinoActivityIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                            : Stack(
+                          children: [
+                            Positioned(
+                              child: CircleAvatar(
+                                radius: _height * _width * 0.0002,
+                                backgroundImage: NetworkImage(snapshot
+                                    .data!["profile_image_url"]
+                                    .toString()),
+                              ),
+                            ),
+                            Positioned(
+                              child: CircleAvatar(
+                                child: Icon(Icons.camera,color: Colors.white,),
+                                radius: _height*_width*0.00005,),
+                              top: _height*0.11,
+                              left: _width*0.24,
+                            )
+                          ],
+                        )
+                            : _isLoading
+                            ? CircleAvatar(
+                          radius: _height * _width * 0.0002,
+                          child: Center(
+                            child: CupertinoActivityIndicator(
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                            :  Stack(
+                          children: [
+                            Positioned(
+                              child: CircleAvatar(
+                                radius: _height * _width * 0.0002,
+                                backgroundImage: NetworkImage(
+                                    "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
+                              ),
+                            ),
+                            Positioned(
+                              child: CircleAvatar(
+                                child: Icon(Icons.camera,color: Colors.white,),
+                                radius: _height*_width*0.00005,),
+                              top: _height*0.11,
+                              left: _width*0.24,
+                            )
+                          ],
                         );
+
                       }),
                 ),
               ),
@@ -335,27 +361,62 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .set({
       "profile_image_url": imageUrl,
     });
+
     setState(() {
       _isLoading = false;
     });
   }
 
   updateEmail() async{
-     setState(() {
+
+    var url;
+
+    setState(() {
        _isProgress=true;
      });
+
+    FirebaseFirestore.instance
+        .collection('Profile')
+        .doc("images")
+        .collection("data")
+        .doc(context.read<UserProvider>().UserEmail)
+        .get()
+        .then((value) {
+      setState(() {
+        url = value.data()!["profile_image_url"];
+        print('url_image_profile: $url');
+      });
+    });
+
     var auth = await FirebaseAuth.instance.currentUser;
     try {
       var usercred = await auth?.updateEmail(_emailController!.text.toString().trim());
+      context.read<UserProvider>().setUserEmail(_emailController!.text.toString().trim());
       print('Email updated!!');
+
+
+
+          _firestore
+          .collection("Profile")
+          .doc("images")
+          .collection("data")
+          .doc(context.read<UserProvider>().UserEmail)
+          .set({
+        "profile_image_url": url,
+      });
+
       Fluttertoast.showToast(
         backgroundColor: Colors.black,
         textColor: Colors.white,
         gravity: ToastGravity.CENTER,
         msg: "Your Email changed Successfully",);
+
+
       setState(() {
         _isProgress=false;
       });
+
+
     } catch(err) {
       Fluttertoast.showToast(
         backgroundColor: Colors.black,

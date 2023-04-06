@@ -67,16 +67,49 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   SizedBox(
-                    height: _height * 0.2,
+                    height: _height * 0.05,
                   ),
-                  Text("Welcome",
-                      style: const TextStyle(
-                        fontFamily: 'Poppins',
-                        color: Color(0xff313131),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        fontStyle: FontStyle.normal,
-                      )),
+                  Container(
+                    height: _height*0.3,
+                    width: _width,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/advertisement.gif")
+                      )
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+
+                    children: [
+                      Text("Welcome",
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Color(0xff313131),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            fontStyle: FontStyle.italic,
+                          )),
+                      SizedBox(width: _width*0.01,),
+                      Text("To",
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Color(0xff313131),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            fontStyle: FontStyle.italic,
+                          )),
+                      SizedBox(width: _width*0.01,),
+                      Text("𝘦𝘈𝘥𝘷𝘦𝘳𝘵𝘪𝘴𝘦",
+                          style: const TextStyle(
+                            fontFamily: 'Poppins',
+                            color: Color(0xff313131),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+
+                          ))
+                    ],
+                  ),
                   SizedBox(
                     height: _height * 0.1,
                   ),

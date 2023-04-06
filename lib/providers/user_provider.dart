@@ -17,6 +17,8 @@ class UserProvider extends ChangeNotifier {
 
   String? get UserID => _sharedPreferences.getString("user_id");
 
+  int? get Notifications => _sharedPreferences.getInt("notifications");
+
 
 
   void setUserEmail(String email) async {
@@ -40,6 +42,11 @@ class UserProvider extends ChangeNotifier {
 
   void setUserID(String id) async {
     _sharedPreferences.setString("user_id", id);
+    notifyListeners();
+  }
+
+  void setNotifications(int id) async {
+    _sharedPreferences.setInt("notifications", id);
     notifyListeners();
   }
 

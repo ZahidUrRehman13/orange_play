@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Stream? stream;
   int count = 0;
   bool blackOrRed = false;
+  int notificationCount = 0;
 
   String parseTimeStamp(int value) {
     var date = DateTime.fromMillisecondsSinceEpoch(value);
@@ -53,6 +54,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
     stream!.listen((data) {
       print(data.size);
+    });
+  }
+
+
+  sendNotificationsCount() async {
+    _firestore
+        .collection("NotificationsCount")
+        .doc("count")
+        .collection("data")
+        .doc("Notifications")
+        .set({
+      "count": 0,
     });
   }
 
@@ -103,6 +116,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     replacement: false, // Optional value
                     curveType: CurveType.decelerate, // Optional value
                   );
+
+                  sendNotificationsCount();
                 },
                 icon: SvgPicture.asset(
                   "assets/svg/ontification_svg.svg", //asset location
@@ -118,8 +133,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
                         color: Colors.red),
-                    child: const Center(
-                      child: Text("0"),
+                    child: Center(
+                      child: StreamBuilder(
+                          stream: FirebaseFirestore.instance
+                              .collection('NotificationsCount')
+                              .doc("count")
+                              .collection("data")
+                              .doc("Notifications")
+                              .snapshots(),
+                          builder: (context, snapshot) {
+
+                            return snapshot.hasData
+                                ? Text(snapshot.data!["count"].toString())
+                                : Text("0");
+
+                          }),
                     ),
                   )),
             ],
@@ -318,15 +346,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                             width: width * 0.15,
                                             height: height * 0.03,
                                             decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(30)),
-                                                border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 1),
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(30)),
+                                              border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 1),
                                               gradient: const LinearGradient(
-                                                  begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                                                  end: Alignment(1.3960868120193481, 1.4281718730926514),
-                                                  colors: [Color(0xff1a51ba),Color(0xff48bc11)]),
+                                                  begin: Alignment(
+                                                      -0.03018629550933838,
+                                                      -0.02894212305545807),
+                                                  end: Alignment(
+                                                      1.3960868120193481,
+                                                      1.4281718730926514),
+                                                  colors: [
+                                                    Color(0xff1a51ba),
+                                                    Color(0xff48bc11)
+                                                  ]),
                                             ),
                                             child: Row(
                                               mainAxisAlignment:

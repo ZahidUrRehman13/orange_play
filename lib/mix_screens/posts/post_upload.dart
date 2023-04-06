@@ -294,6 +294,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                               imageUrl.isNotEmpty &&
                               _phoneController!.text.isNotEmpty) {
                             sendPost();
+                            sendNotifications();
                           } else {
 
                             Fluttertoast.showToast(
@@ -419,6 +420,35 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
       curveType: CurveType.decelerate, // Optional value
     );
   }
+
+  sendNotifications() async {
+    _firestore
+        .collection("Notifications")
+        .doc("main")
+        .collection("data")
+        .doc(UniqueIDs).set({
+      "description": _descriptionController!.text.trim().toString(),
+      "post_id": UniqueIDs,
+      "title": _bookTitleController!.text.trim().toString(),
+      "time": DateTime.now().millisecondsSinceEpoch,
+      "url": imageUrl,
+      "postedby": context.read<UserProvider>().UserEmail!.toString(),
+
+    });
+    sendNotificationsCount();
+  }
+
+  sendNotificationsCount() async {
+    _firestore
+        .collection("NotificationsCount")
+        .doc("count")
+        .collection("data")
+        .doc("Notifications").set({
+      "count": 1,
+    });
+  }
+
+
 
   Future<void> _retrievePath() async {
     final prefs = await SharedPreferences.getInstance();
