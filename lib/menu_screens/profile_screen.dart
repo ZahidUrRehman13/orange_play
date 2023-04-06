@@ -8,10 +8,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:transitioner/transitioner.dart';
 import 'package:uuid/uuid.dart';
 import '../constants_services/colors_class.dart';
 import '../providers/user_provider.dart';
 import 'dart:io';
+
+import 'home_screens.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -34,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController? _emailController;
   TextEditingController? _phoneController;
   var user;
+  bool _isProgress= false;
 
   @override
   void initState() {
@@ -86,172 +90,197 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: Colors.black,
           ),
         ),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: EdgeInsets.only(top: _height * 0.1),
-              child: GestureDetector(
-                onTap: () {
-                  _getFromGallery();
-                },
-                child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('Profile')
-                        .doc("images")
-                        .collection("data")
-                        .doc(context.read<UserProvider>().UserEmail)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return _isLoading
-                            ? CircleAvatar(
-                                radius: _height * _width * 0.0002,
-                                child: Center(
-                                  child: CupertinoActivityIndicator(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            : CircleAvatar(
-                                radius: _height * _width * 0.0002,
-                                backgroundImage: NetworkImage(snapshot
-                                    .data!["profile_image_url"]
-                                    .toString()),
-                              );
-                      }
-                      return CircleAvatar(
-                        radius: _height * _width * 0.0002,
-                        backgroundImage: NetworkImage(
-                            "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
-                      );
-                    }),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: _height * 0.05,
-          ),
-          Container(
-            width: _width * 0.6,
-            height: _height * 0.05,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(0)),
-                border: Border.all(color: Colors.black, width: 1),
-                color: Colors.transparent),
-            child: Center(
-              child: Text("${context.read<UserProvider>().UserEmail!}",
-                  style: TextStyle(
-                    fontFamily: 'Lato',
-                    color: Color(0xff313131),
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    fontStyle: FontStyle.normal,
-                  )),
-            ),
-          ),
-          SizedBox(
-            height: _height * 0.15,
-          ),
-          Container(
-            margin: EdgeInsets.only(
-                top: _height * 0.04,
-                left: _width * 0.02,
-                right: _width * 0.02),
-            height: _height * 0.07,
-            width: _width * 0.95,
-            child: TextFormField(
-              key: _emailKey,
-              controller: _emailController,
-              keyboardType: TextInputType.text,
-              textInputAction:
-              TextInputAction.next,
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      width: 2,
-                      color: Color(0xFF256D85)),
-                  borderRadius:
-                  BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      width: 2,
-                      color: Color(0xFF256D85)),
-                  borderRadius:
-                  BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.only(
-                top: _height * 0.015,
-                left: _width * 0.02,
-                right: _width * 0.02),
-            height: _height * 0.25,
-            width: _width * 0.95,
-            child: TextFormField(
-              key: _phoneKey,
-              controller: _phoneController,
-              keyboardType:
-              TextInputType.multiline,
-              maxLines: 10,
-              textInputAction:
-              TextInputAction.next,
-              cursorColor: Colors.black,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                // labelText: widget.labelText,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      width: 2,
-                      color: Color(0xFF256D85)),
-                  borderRadius:
-                  BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(
-                      width: 2,
-                      color: Color(0xFF256D85)),
-                  borderRadius:
-                  BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: _height * 0.15,
-          ),
-          GestureDetector(
-            onTap: (){
-              // resetEmail();
-            },
-            child: Container(
-              height: _height * 0.05,
-              width: _width * 0.6,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(5)),
-                gradient: const LinearGradient(
-                    begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                    end: Alignment(1.3960868120193481, 1.4281718730926514),
-                    colors: [Color(0xff4a54be), Color(0xff48bc71)]),
-              ),
-              child: Center(
-                child: Text(
-                  "Update",
-                  style: TextStyle(color: Colors.white, fontSize: _width * 0.04),
-                ),
-              ),
-            ),
-          )
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                context.read<UserProvider>().setUserEmail("");
+                navigate();
+              },
+              icon: Container(
+                height: _height*0.04,
+                  width: _width*0.15,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    gradient: const LinearGradient(
+                        begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                        end: Alignment(1.3960868120193481, 1.4281718730926514),
+                        colors: [Color(0xff48bc11),Color(0xff1a51ba)]),
+                  ),
+                  child: Icon(Icons.login_outlined,color: AllColors.mainColor,))),
+          SizedBox(width: _width*0.02,)
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(top: _height * 0.1),
+                child: GestureDetector(
+                  onTap: () {
+                    _getFromGallery();
+                  },
+                  child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                          .collection('Profile')
+                          .doc("images")
+                          .collection("data")
+                          .doc(context.read<UserProvider>().UserEmail)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return _isLoading
+                              ? CircleAvatar(
+                                  radius: _height * _width * 0.0002,
+                                  child: Center(
+                                    child: CupertinoActivityIndicator(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Stack(
+                                children: [
+                                  Positioned(
+                                    child: CircleAvatar(
+                                        radius: _height * _width * 0.0002,
+                                        backgroundImage: NetworkImage(snapshot
+                                            .data!["profile_image_url"]
+                                            .toString()),
+                                      ),
+                                  ),
+                                  Positioned(
+                                    child: CircleAvatar(
+                                        child: Icon(Icons.camera,color: Colors.white,),
+                                    radius: _height*_width*0.00005,),
+                                    top: _height*0.11,
+                                    left: _width*0.24,
+                                  )
+                                ],
+                              );
+                        }
+                        return CircleAvatar(
+                          radius: _height * _width * 0.0002,
+                          backgroundImage: NetworkImage(
+                              "https://upload.wikimedia.org/wikipedia/commons/8/8b/Rose_flower.jpg"),
+                        );
+                      }),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: _height * 0.05,
+            ),
+            Padding(
+              padding:EdgeInsets.only(
+                  top: _height * 0.04,
+                  left: _width * 0.02,
+                  right: _width * 0.02),
+              child: TextFormField(
+                key: _emailKey,
+                controller: _emailController,
+                keyboardType: TextInputType.text,
+                textInputAction:
+                TextInputAction.next,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                ),
+              ),
+            ),
+            // Padding(
+            //   padding: EdgeInsets.only(
+            //       top: _height * 0.04,
+            //       left: _width * 0.02,
+            //       right: _width * 0.02),
+            //   child: TextFormField(
+            //     key: _phoneKey,
+            //     controller: _phoneController,
+            //     keyboardType:
+            //     TextInputType.multiline,
+            //     maxLines: 1,
+            //     textInputAction:
+            //     TextInputAction.next,
+            //     cursorColor: Colors.black,
+            //     decoration: InputDecoration(
+            //       filled: true,
+            //       fillColor: Colors.white,
+            //       // labelText: widget.labelText,
+            //       enabledBorder: OutlineInputBorder(
+            //         borderSide: const BorderSide(
+            //             width: 1,
+            //             color: Colors.black),
+            //         borderRadius:
+            //         BorderRadius.circular(1),
+            //       ),
+            //       focusedBorder: OutlineInputBorder(
+            //         borderSide: const BorderSide(
+            //             width: 1,
+            //             color: Colors.black),
+            //         borderRadius:
+            //         BorderRadius.circular(1),
+            //       ),
+            //     ),
+            //   ),
+            // ),
+            SizedBox(
+              height: _height * 0.02,
+            ),
+            Visibility(
+              visible: _isProgress,
+              child: Container(
+                height: _height * 0.05,
+                child: Center(
+                  child: CupertinoActivityIndicator(color: Colors.black,),
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: (){
+                updateEmail();
+              },
+              child: Padding(
+                padding:EdgeInsets.only(
+                    top: _height * 0.04,
+                    left: _width * 0.02,
+                    right: _width * 0.02),
+                child: Container(
+                  height: _height * 0.075,
+                  width: _width ,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                    gradient: const LinearGradient(
+                        begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                        end: Alignment(1.3960868120193481, 1.4281718730926514),
+                        colors: [Color(0xff4a54be), Color(0xff48bc71)]),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Update",
+                      style: TextStyle(color: Colors.white, fontSize: _width * 0.04),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -290,11 +319,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       print("profile_image_url:  $imageUrl");
-      sendPost();
+      sendProfileImage();
     }
   }
 
-  sendPost() async {
+  sendProfileImage() async {
     setState(() {
       _isLoading = true;
     });
@@ -311,22 +340,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Future resetEmail(String newEmail) async {
+  updateEmail() async{
+     setState(() {
+       _isProgress=true;
+     });
+    var auth = await FirebaseAuth.instance.currentUser;
+    try {
+      var usercred = await auth?.updateEmail(_emailController!.text.toString().trim());
+      print('Email updated!!');
+      Fluttertoast.showToast(
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        gravity: ToastGravity.CENTER,
+        msg: "Your Email changed Successfully",);
+      setState(() {
+        _isProgress=false;
+      });
+    } catch(err) {
+      Fluttertoast.showToast(
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        gravity: ToastGravity.CENTER,
+        msg: "Network issue try again",);
+      setState(() {
+        _isProgress=false;
+      });
+      print(err);
+    }
+  }
 
-
-    var message;
-    user!.updateEmail(newEmail)
-        .then(
-          (value) {
-            message = 'Success';
-            Fluttertoast.showToast(
-            backgroundColor: Colors.black,
-            textColor: Colors.white,
-            gravity: ToastGravity.CENTER,
-            msg: "Your Email changed Successfully",);
-          }
-    )
-        .catchError((onError) => message = 'error');
-    return message;
+  void navigate() {
+    Transitioner(
+      context: context,
+      child: const HomeScreen(),
+      animation: AnimationType.slideLeft, // Optional value
+      duration: const Duration(milliseconds: 1000), // Optional value
+      replacement: true, // Optional value
+      curveType: CurveType.decelerate, // Optional value
+    );
   }
 }

@@ -222,22 +222,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(
                     height: _height * 0.05,
                   ),
-                  Center(
-                    child: MaterialButton(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                  GestureDetector(
+                    onTap: (){
+                      handleLoginUser();
+                    },
+                    child: Padding(
+                      padding:EdgeInsets.only(
+                          top: _height * 0.04,
+                          left: _width * 0.04,
+                          right: _width * 0.04),
+                      child: Container(
+                        height: _height * 0.075,
+                        width: _width ,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
+                          gradient: const LinearGradient(
+                              begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                              end: Alignment(1.3960868120193481, 1.4281718730926514),
+                              colors: [Color(0xff4a54be), Color(0xff48bc71)]),
                         ),
-                        color: const Color(0xff3a6c83),
-                        minWidth: _width * 0.72,
-                        height: _height * 0.05,
-                        onPressed: () {
-                          handleLoginUser();
-                        },
-                        child: Text(
-                          "Login OR Register",
-                          style: TextStyle(
-                              color: Colors.white, fontSize: _width * 0.04),
-                        )),
+                        child: Center(
+                          child: Text(
+                            "Login OR Register",
+                            style: TextStyle(
+                                color: Colors.white, fontSize: _width * 0.04),
+                          )
+                        ),
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: _height * 0.03),

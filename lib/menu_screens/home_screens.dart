@@ -223,34 +223,57 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (_, index) {
                           return GestureDetector(
                             onTap: () {
-                              _Views(
-                                  snapshot.data.docs[index]
-                                  ['views'],
-                                  snapshot.data.docs[index]
-                                  ['post_id'].toString());
-                              Transitioner(
-                                context: context,
-                                child: PostDetails(
-                                  imageUrl: snapshot.data.docs[index]['url'],
-                                  description: snapshot.data.docs[index]
-                                      ['description'],
-                                  jobTitle: snapshot.data.docs[index]['title'],
-                                  timePublished: snapshot.data.docs[index]
-                                      ['time'],
-                                  phone: snapshot.data.docs[index]['phone'],
-                                  postedBy: snapshot.data.docs[index]
-                                      ['postedby'],
-                                  chatId: snapshot.data.docs[index]['chat_id'],
-                                ),
-                                animation:
-                                    AnimationType.slideLeft, // Optional value
-                                duration: Duration(
-                                    milliseconds: 1000), // Optional value
-                                replacement: false, // Optional value
-                                curveType:
-                                    CurveType.decelerate, // Optional value
-                              );
-
+                              if (context
+                                          .read<UserProvider>()
+                                          .UserEmail
+                                          .toString() !=
+                                      "" ||
+                                  context
+                                      .read<UserProvider>()
+                                      .UserEmail
+                                      .toString()
+                                      .isNotEmpty) {
+                                _Views(
+                                    snapshot.data.docs[index]['views'],
+                                    snapshot.data.docs[index]['post_id']
+                                        .toString());
+                                Transitioner(
+                                  context: context,
+                                  child: PostDetails(
+                                    imageUrl: snapshot.data.docs[index]['url'],
+                                    description: snapshot.data.docs[index]
+                                        ['description'],
+                                    jobTitle: snapshot.data.docs[index]
+                                        ['title'],
+                                    timePublished: snapshot.data.docs[index]
+                                        ['time'],
+                                    phone: snapshot.data.docs[index]['phone'],
+                                    postedBy: snapshot.data.docs[index]
+                                        ['postedby'],
+                                    chatId: snapshot.data.docs[index]
+                                        ['chat_id'],
+                                  ),
+                                  animation:
+                                      AnimationType.slideLeft, // Optional value
+                                  duration: Duration(
+                                      milliseconds: 1000), // Optional value
+                                  replacement: false, // Optional value
+                                  curveType:
+                                      CurveType.decelerate, // Optional value
+                                );
+                              } else {
+                                Transitioner(
+                                  context: context,
+                                  child: const LoginScreen(),
+                                  animation:
+                                      AnimationType.slideLeft, // Optional value
+                                  duration: const Duration(
+                                      milliseconds: 1000), // Optional value
+                                  replacement: false, // Optional value
+                                  curveType:
+                                      CurveType.decelerate, // Optional value
+                                );
+                              }
                             },
                             child: Column(
                               children: [
@@ -278,10 +301,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(3)),
                                                 border: Border.all(
-                                                    color:
-                                                         Colors.white,
+                                                    color: Colors.white,
                                                     width: 1),
-                                                color: Colors.green),
+                                                color: Color(0xff4a54be)),
                                             child: Center(
                                                 child: Text(
                                               "${snapshot.data.docs[index]['likes']} likes",
@@ -299,19 +321,30 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 borderRadius: BorderRadius.all(
                                                     Radius.circular(30)),
                                                 border: Border.all(
-                                                    color:
-                                                    Colors.white,
+                                                    color: Colors.white,
                                                     width: 1),
-                                                color: Colors.green.shade300),
+                                              gradient: const LinearGradient(
+                                                  begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                                                  end: Alignment(1.3960868120193481, 1.4281718730926514),
+                                                  colors: [Color(0xff1a51ba),Color(0xff48bc11)]),
+                                            ),
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
-                                                Icon(Icons.remove_red_eye,size: height*width*0.00006,color: Colors.red,),
-                                                SizedBox(width: width*0.01,),
+                                                Icon(
+                                                  Icons.remove_red_eye,
+                                                  size:
+                                                      height * width * 0.00006,
+                                                  color: Colors.red,
+                                                ),
+                                                SizedBox(
+                                                  width: width * 0.01,
+                                                ),
                                                 Text(
                                                   "${snapshot.data.docs[index]['views']}",
                                                   style: TextStyle(
-                                                      color: Colors.red,
+                                                      color: Colors.white,
                                                       fontSize: 12),
                                                 ),
                                               ],
@@ -358,8 +391,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               sendLikes(
                                                   snapshot.data.docs[index]
                                                       ['likes'],
-                                                  snapshot.data.docs[index]
-                                                      ['post_id'].toString());
+                                                  snapshot.data
+                                                      .docs[index]['post_id']
+                                                      .toString());
                                               setState(() {
                                                 blackOrRed = true;
                                               });
@@ -370,7 +404,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 child: Center(
                                                     child: Icon(
                                                   Icons.favorite,
-                                                  color: blackOrRed ? Colors.red:Colors.black,
+                                                  color: blackOrRed
+                                                      ? Colors.red
+                                                      : Colors.black,
                                                 )),
                                                 decoration: BoxDecoration(
                                                     borderRadius:
@@ -460,7 +496,7 @@ class _HomeScreenState extends State<HomeScreen> {
         closeButtonStyle: const ExpandableFabCloseButtonStyle(
           child: Icon(Icons.close),
           foregroundColor: Colors.white,
-          backgroundColor: Color(0xff4a54be),
+          backgroundColor: Color(0xff48bc11),
         ),
         overlayStyle: ExpandableFabOverlayStyle(
           // color: Colors.black.withOpacity(0.5),
@@ -480,38 +516,48 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: [
           FloatingActionButton.small(
-            backgroundColor: Color(0xFF7077cb),
+            backgroundColor: Color(0xff48bc11),
             heroTag: null,
             child: const Icon(Icons.edit),
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
           FloatingActionButton.small(
-            backgroundColor: Color(0xFF7077cb),
+            backgroundColor: Color(0xff48bc11),
             heroTag: null,
             child: const Icon(Icons.share),
-            onPressed: () {
-
-            },
+            onPressed: () {},
           ),
           FloatingActionButton.small(
-            backgroundColor: Color(0xFF7077cb),
+            backgroundColor: Color(0xff48bc11),
             heroTag: null,
             child: const Icon(Icons.person_pin),
             onPressed: () {
-              Transitioner(
-                context: context,
-                child: ProfileScreen(
-                ),
-                animation:
-                AnimationType.slideLeft, // Optional value
-                duration: Duration(
-                    milliseconds: 1000), // Optional value
-                replacement: false, // Optional value
-                curveType:
-                CurveType.decelerate, // Optional value
-              );
+              if (context.read<UserProvider>().UserEmail.toString() != "" ||
+                  context
+                      .read<UserProvider>()
+                      .UserEmail
+                      .toString()
+                      .isNotEmpty) {
+                Transitioner(
+                  context: context,
+                  child: ProfileScreen(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration: Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              } else {
+                Transitioner(
+                  context: context,
+                  child: const LoginScreen(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration:
+                      const Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              }
+
               // final state = key.currentState;
               // if (state != null) {
               //   debugPrint('isOpen:${state.isOpen}');
@@ -525,7 +571,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   sendLikes(var oldValue, var post_id) async {
-    int count = oldValue+1;
+    int count = oldValue + 1;
     print("likes_count $count");
     _firestore
         .collection("Home")
@@ -538,7 +584,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _Views(var oldValue, var post_id) async {
-    int count = oldValue+1;
+    int count = oldValue + 1;
     print("views_count $count");
     _firestore
         .collection("Home")

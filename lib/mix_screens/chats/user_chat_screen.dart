@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:transitioner/transitioner.dart';
+import '../../constants_services/colors_class.dart';
 import '../../providers/user_provider.dart';
 
 class UserChatScreen extends StatefulWidget {
@@ -78,6 +79,16 @@ class _UserChatScreenState extends State<UserChatScreen> {
     var _width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            size: _height * 0.03,
+            color:  AllColors.mainColor,
+          ),
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -86,15 +97,7 @@ class _UserChatScreenState extends State<UserChatScreen> {
                 colors: [Color(0xff4a54be), Color(0xff48bc71)]),
           ),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-                context.read<UserProvider>().setUserEmail("");
-                navigate();
-              },
-              icon: Icon(Icons.logout_outlined))
-        ],
+
       ),
       body: StreamBuilder(
         stream: stream,

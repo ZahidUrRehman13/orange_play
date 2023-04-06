@@ -88,8 +88,20 @@ class _PostDetailsState extends State<PostDetails> {
                 );
               }
             },
-            icon: Icon(Icons.chat,color: Colors.green,
-              size: height*width*0.0001,),
+            icon: Container(
+              height: height*0.05,
+              width: width*0.2,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // borderRadius: BorderRadius.all(Radius.circular(5)),
+                gradient: const LinearGradient(
+                    begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                    end: Alignment(1.3960868120193481, 1.4281718730926514),
+                    colors: [Color(0xff48bc11),Color(0xff1a51ba)]),
+              ),
+              child: Icon(Icons.chat,color: Colors.white,
+                size: height*width*0.00007,),
+            ),
           )
         ],
       ),
