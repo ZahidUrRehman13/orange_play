@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_carousel_slider/carousel_slider.dart';
@@ -12,8 +13,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:orange_play/menu_screens/profile_screen.dart';
 import 'package:orange_play/mix_screens/Viewer_screen.dart';
+import 'package:orange_play/mix_screens/posts/edit_post.dart';
 import 'package:orange_play/mix_screens/posts/post_upload.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:transitioner/transitioner.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -37,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int count = 0;
   bool blackOrRed = false;
   int notificationCount = 0;
+  String? UniqueIDs;
 
   String parseTimeStamp(int value) {
     var date = DateTime.fromMillisecondsSinceEpoch(value);
@@ -44,13 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return d12;
   }
 
+
   _listener() {
     stream = _firestore
         .collection("Home")
         .doc("Upload")
         .collection("data")
         .orderBy("time", descending: true)
-        .snapshots(); //retrieve all clients
+        .snapshots();
 
     stream!.listen((data) {
       print(data.size);
@@ -531,7 +536,7 @@ class _HomeScreenState extends State<HomeScreen> {
         closeButtonStyle: const ExpandableFabCloseButtonStyle(
           child: Icon(Icons.close),
           foregroundColor: Colors.white,
-          backgroundColor: Color(0xff48bc11),
+          backgroundColor: Color(0xff4a54aa),
         ),
         overlayStyle: ExpandableFabOverlayStyle(
           // color: Colors.black.withOpacity(0.5),
@@ -551,19 +556,47 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         children: [
           FloatingActionButton.small(
-            backgroundColor: Color(0xff48bc11),
+            backgroundColor: Color(0xff4a51aa),
             heroTag: null,
             child: const Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: () {
+              if (context.read<UserProvider>().UserEmail.toString() != "" ||
+                  context
+                      .read<UserProvider>()
+                      .UserEmail
+                      .toString()
+                      .isNotEmpty) {
+                Transitioner(
+                  context: context,
+                  child: EditPosts(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration: Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              } else {
+                Transitioner(
+                  context: context,
+                  child: const LoginScreen(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration:
+                  const Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              }
+            },
           ),
           FloatingActionButton.small(
-            backgroundColor: Color(0xff48bc11),
+            backgroundColor: Color(0xff4a51aa),
             heroTag: null,
             child: const Icon(Icons.share),
-            onPressed: () {},
+            onPressed: () {
+              Share.share('www.novelflex.com');
+            },
           ),
           FloatingActionButton.small(
-            backgroundColor: Color(0xff48bc11),
+            backgroundColor: Color(0xff4a51aa),
             heroTag: null,
             child: const Icon(Icons.person_pin),
             onPressed: () {

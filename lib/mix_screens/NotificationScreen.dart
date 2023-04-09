@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:orange_play/mix_screens/posts/post_detail_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:transitioner/transitioner.dart';
 import '../constants_services/colors_class.dart';
@@ -23,6 +25,7 @@ class _NotificationsState extends State<Notifications> {
   @override
   void initState() {
     _listener();
+
     super.initState();
   }
 
@@ -37,6 +40,13 @@ class _NotificationsState extends State<Notifications> {
     stream!.listen((data) {
       print(data.size);
     });
+  }
+
+
+  String parseTimeStamp(int value) {
+    var date = DateTime.fromMillisecondsSinceEpoch(value);
+    var d12 = DateFormat('MM-dd-yyyy, hh:mm a').format(date);
+    return d12;
   }
 
   @override
@@ -117,7 +127,33 @@ class _NotificationsState extends State<Notifications> {
                       itemCount: snapshot.data.docs.length,
                       itemBuilder: (_, index) {
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+
+                            // Transitioner(
+                            //   context: context,
+                            //   child: PostDetails(
+                            //     imageUrl: snapshot.data.docs[index]['url'],
+                            //     description: snapshot.data.docs[index]
+                            //     ['description'],
+                            //     jobTitle: snapshot.data.docs[index]
+                            //     ['title'],
+                            //     timePublished: snapshot.data.docs[index]
+                            //     ['time'],
+                            //     phone: snapshot.data.docs[index]['phone'],
+                            //     postedBy: snapshot.data.docs[index]
+                            //     ['postedby'],
+                            //     chatId: snapshot.data.docs[index]
+                            //     ['chat_id'],
+                            //   ),
+                            //   animation:
+                            //   AnimationType.slideLeft, // Optional value
+                            //   duration: Duration(
+                            //       milliseconds: 1000), // Optional value
+                            //   replacement: false, // Optional value
+                            //   curveType:
+                            //   CurveType.decelerate, // Optional value
+                            // );
+                          },
                           child: Column(
                             children: [
                               Padding(
@@ -138,23 +174,23 @@ class _NotificationsState extends State<Notifications> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Container(
-                                      height: _height * 0.1,
-                                      width: _width * 0.15,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.rectangle,
-                                          image: DecorationImage(
-                                              image: snapshot.data.docs[index]
-                                                          ['url'] ==
-                                                      " "
-                                                  ? AssetImage(
-                                                      "assets/Novelflex_main.png")
-                                                  : NetworkImage(snapshot.data
-                                                          .docs[index]['url']
-                                                          .toString())
-                                                      as ImageProvider,
-                                              fit: BoxFit.cover)),
-                                    ),
+                                    // Container(
+                                    //   height: _height * 0.1,
+                                    //   width: _width * 0.15,
+                                    //   decoration: BoxDecoration(
+                                    //       shape: BoxShape.rectangle,
+                                    //       image: DecorationImage(
+                                    //           image: snapshot.data.docs[index]
+                                    //                       ['url'] ==
+                                    //                   " "
+                                    //               ? AssetImage(
+                                    //                   "assets/Novelflex_main.png")
+                                    //               : NetworkImage(snapshot.data
+                                    //                       .docs[index]['url']
+                                    //                       .toString())
+                                    //                   as ImageProvider,
+                                    //           fit: BoxFit.cover)),
+                                    // ),
                                     Container(
                                       width: _width * 0.4,
                                       child: Column(
@@ -163,6 +199,14 @@ class _NotificationsState extends State<Notifications> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
+                                          // Text("New Advertisement Posted",
+                                          //     style: TextStyle(
+                                          //       fontFamily: 'Poppins',
+                                          //       color: Colors.black,
+                                          //       fontSize: 15,
+                                          //       fontWeight: FontWeight.w800,
+                                          //       fontStyle: FontStyle.normal,
+                                          //     )),
                                           Text(
                                             snapshot.data.docs[index]['title'],
                                             style: const TextStyle(
@@ -181,6 +225,23 @@ class _NotificationsState extends State<Notifications> {
                                           Text(
                                             snapshot.data.docs[index]
                                                 ['description'],
+                                            style: const TextStyle(
+                                                color: const Color(0xff2a2a2a),
+                                                fontWeight: FontWeight.normal,
+                                                fontFamily: "Neckar",
+                                                fontStyle: FontStyle.normal,
+                                                fontSize: 12.0),
+                                            textAlign: TextAlign.left,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                          SizedBox(
+                                            height: _height * 0.03,
+                                          ),
+                                          Text(
+                                              parseTimeStamp(snapshot.data.docs[index]
+                                              ['time'])
+                                            ,
                                             style: const TextStyle(
                                                 color: const Color(0xff2a2a2a),
                                                 fontWeight: FontWeight.normal,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -30,6 +32,7 @@ class PostDetails extends StatefulWidget {
 }
 
 class _PostDetailsState extends State<PostDetails> {
+  StreamController controller = StreamController();
   String? email;
   String? userID;
 
@@ -99,7 +102,7 @@ class _PostDetailsState extends State<PostDetails> {
                 gradient: const LinearGradient(
                     begin: Alignment(-0.03018629550933838, -0.02894212305545807),
                     end: Alignment(1.3960868120193481, 1.4281718730926514),
-                    colors: [Color(0xff48bc11),Color(0xff1a51ba)]),
+                    colors: [Color(0xff1a51ba),Color(0xff48bc11)]),
               ),
               child: Icon(Icons.chat,color: Colors.white,
                 size: height*width*0.00007,),
@@ -140,6 +143,7 @@ class _PostDetailsState extends State<PostDetails> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+
                     StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('Profile')
@@ -149,7 +153,7 @@ class _PostDetailsState extends State<PostDetails> {
                             .snapshots(),
                         builder: (context, snapshot) {
 
-                          return snapshot.hasData
+                          return snapshot.hasData && snapshot.data!.exists
                               ? CircleAvatar(
                             radius: height*width*0.000045,
                             backgroundColor: const Color(0xff3a6c83),
@@ -168,6 +172,9 @@ class _PostDetailsState extends State<PostDetails> {
 
 
                         }),
+
+
+
                     Row(
                       children: [
                         Text(

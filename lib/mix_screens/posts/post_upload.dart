@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,10 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   String? phone;
   String? country = '+971';
   var UniqueIDs;
+  String? firebaseUuid;
   var uuid;
+  Stream? stream;
+
 
   TextEditingController? _bookTitleController;
   TextEditingController? _descriptionController;
@@ -54,6 +58,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     _descriptionController = new TextEditingController();
     _phoneController = TextEditingController();
     _generateUniqueIDs();
+    _firebaseUniqueIDs();
   }
 
   @override
@@ -63,6 +68,8 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     _phoneController!.dispose();
     super.dispose();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -371,7 +378,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
       var snapshot = await _firebaseStorage
           .ref()
           .child(
-              'images/Home/$_diceface/${context.read<UserProvider>().UserEmail}/$fileName')
+              'images/Home/$firebaseUuid/$_diceface/${context.read<UserProvider>().UserEmail}/$fileName')
           .putFile(imageFile!);
       var downloadUrl = await snapshot.ref.getDownloadURL();
       setState(() {
@@ -385,6 +392,12 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
 
   _generateUniqueIDs(){
     UniqueIDs= context.read<UserProvider>().UserEmail!.toString()+uuid.v1();
+    print("UniqueID: $UniqueIDs");
+  }
+
+  _firebaseUniqueIDs() async{
+    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
+    print("firebaseUuid: $firebaseUuid");
   }
 
   sendPost() async {
@@ -395,9 +408,29 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
         .collection("Home")
         .doc("Upload")
         .collection("data")
-        .doc(UniqueIDs).set({
+        .doc(firebaseUuid!+UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),
-      "post_id": UniqueIDs,
+      "post_id": firebaseUuid!+UniqueIDs,
+      "title": _bookTitleController!.text.trim().toString(),
+      "time": DateTime.now().millisecondsSinceEpoch,
+      "url": imageUrl,
+      "phone": "${country! + _phoneController!.text}",
+      "postedby": context.read<UserProvider>().UserEmail!.toString(),
+      "chat_id": context.read<UserProvider>().UserEmail!.toString()+_diceface.toString(),
+      "likes": 0,
+      "views":0,
+    });
+    userPost();
+  }
+
+  userPost() async {
+    _firestore
+        .collection("User")
+        .doc("Upload")
+        .collection("data")
+        .doc(firebaseUuid!+UniqueIDs).set({
+      "description": _descriptionController!.text.trim().toString(),
+      "post_id": firebaseUuid!+UniqueIDs,
       "title": _bookTitleController!.text.trim().toString(),
       "time": DateTime.now().millisecondsSinceEpoch,
       "url": imageUrl,
@@ -421,6 +454,9 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     );
   }
 
+
+
+
   sendNotifications() async {
     _firestore
         .collection("Notifications")
@@ -428,12 +464,15 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
         .collection("data")
         .doc(UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),
-      "post_id": UniqueIDs,
+      "post_id": firebaseUuid!+UniqueIDs,
       "title": _bookTitleController!.text.trim().toString(),
       "time": DateTime.now().millisecondsSinceEpoch,
       "url": imageUrl,
+      "phone": "${country! + _phoneController!.text}",
       "postedby": context.read<UserProvider>().UserEmail!.toString(),
-
+      "chat_id": context.read<UserProvider>().UserEmail!.toString()+_diceface.toString(),
+      "likes": 0,
+      "views":0,
     });
     sendNotificationsCount();
   }

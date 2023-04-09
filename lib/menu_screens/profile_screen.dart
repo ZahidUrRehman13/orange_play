@@ -39,6 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   var user;
   String? userID;
   bool _isProgress= false;
+  String? profileUrl;
 
   @override
   void initState() {
@@ -46,8 +47,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
     uuid = Uuid();
     _generateUniqueIDs();
     initFirebase();
+    initImageUrl();
     _emailController = new TextEditingController();
     _phoneController = new TextEditingController();
+
+  }
+
+  initImageUrl() async{
+     await  FirebaseFirestore.instance
+        .collection('Profile')
+        .doc("images")
+        .collection("data")
+        .doc(context.read<UserProvider>().UserEmail)
+        .get()
+        .then((value) {
+      setState(() {
+        imageUrl = value.data()!["profile_image_url"]??"www.zahid.com";
+        print('url_image_profile: $imageUrl');
+      });
+    });
   }
 
   initFirebase()async{
@@ -64,6 +82,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _phoneController!.dispose();
     super.dispose();
   }
+
+
 
 
   @override
@@ -108,7 +128,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     gradient: const LinearGradient(
                         begin: Alignment(-0.03018629550933838, -0.02894212305545807),
                         end: Alignment(1.3960868120193481, 1.4281718730926514),
-                        colors: [Color(0xff48bc11),Color(0xff1a51ba)]),
+                        colors: [Color(0xff1a51ba),Color(0xff48bc11)]),
                   ),
                   child: Icon(Icons.login_outlined,color: AllColors.mainColor,))),
           SizedBox(width: _width*0.02,)
@@ -134,7 +154,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           .snapshots(),
                       builder: (context, snapshot) {
 
-                        return snapshot.hasData
+                        return snapshot.hasData && snapshot.data!.exists
                             ? _isLoading
                             ? CircleAvatar(
                           radius: _height * _width * 0.0002,
