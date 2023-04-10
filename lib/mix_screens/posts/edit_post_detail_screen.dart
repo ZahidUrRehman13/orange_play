@@ -458,7 +458,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
         .doc("Upload")
         .collection("data")
         .doc(widget.postId)
-        ..delete();
+        .delete();
     //user data updated
     _firestore
         .collection("User")

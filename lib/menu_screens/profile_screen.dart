@@ -332,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   _generateUniqueIDs() {
-    UniqueIDs = context.read<UserProvider>().UserEmail!.toString() + uuid.v1();
+    UniqueIDs = context.read<UserProvider>().UserEmail.toString() + uuid.v1();
   }
 
   _getFromGallery() async {

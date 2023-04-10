@@ -391,7 +391,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   }
 
   _generateUniqueIDs(){
-    UniqueIDs= context.read<UserProvider>().UserEmail!.toString()+uuid.v1();
+    UniqueIDs= context.read<UserProvider>().UserEmail.toString()+uuid.v1();
     print("UniqueID: $UniqueIDs");
   }
 

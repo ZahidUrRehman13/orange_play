@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AllColors.mainColor,
       appBar: AppBar(
-        // leading: Container(),
+        leading: Container(),
         title: const Text("Home",
             style: TextStyle(
               fontFamily: 'Poppins',
@@ -524,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
         key: key,
-        duration: const Duration(seconds: 1),
+        duration: const Duration(milliseconds: 200),
         // distance: 60.0,
         type: ExpandableFabType.left,
         expandedFabSize: ExpandableFabSize.regular,
