@@ -24,20 +24,17 @@ class _EditPostsState extends State<EditPosts> {
   Stream? stream;
   String? UniqueIDs;
 
-
-
   @override
   void initState() {
     _listener();
     super.initState();
   }
 
-
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return  Scaffold(
+    return Scaffold(
       backgroundColor: AllColors.mainColor,
       appBar: AppBar(
         leading: IconButton(
@@ -68,118 +65,133 @@ class _EditPostsState extends State<EditPosts> {
         ),
         // centerTitle: true,
       ),
-      body:  StreamBuilder(
+      body: StreamBuilder(
         stream: stream,
         builder: (context, AsyncSnapshot snapshot) {
           return snapshot.hasData
-              ? ListView.builder(
-            shrinkWrap: true, // outer ListView
-            // reverse: true,
-            physics: const BouncingScrollPhysics(),
-            itemCount: snapshot.data.docs.length,
-            itemBuilder: (_, index) {
-              return GestureDetector(
-                onTap: () {
-
-                    Transitioner(
-                      context: context,
-                      child: EditPostDetails(
-                        imageUrlE: snapshot.data.docs[index]['url'],
-                        description: snapshot.data.docs[index]
-                        ['description'],
-                        jobTitle: snapshot.data.docs[index]
-                        ['title'],
-                        timePublished: snapshot.data.docs[index]
-                        ['time'],
-                        phone: snapshot.data.docs[index]['phone'],
-                        postedBy: snapshot.data.docs[index]
-                        ['postedby'],
-                        chatId: snapshot.data.docs[index]
-                        ['chat_id'],
-                        postId: snapshot.data.docs[index]
-                        ['post_id'],
-                      ),
-                      animation:
-                      AnimationType.slideLeft, // Optional value
-                      duration: Duration(
-                          milliseconds: 1000), // Optional value
-                      replacement: false, // Optional value
-                      curveType:
-                      CurveType.decelerate, // Optional value
-                    );
-
-                },
-                child: Column(
-                  children: [
-                    Padding(
-                      padding:  EdgeInsets.all(height*width*0.0001),
-                      child: Container(
-                        height: height * 0.3,
-                        width: width,
-                        decoration: BoxDecoration(
-                          // borderRadius: BorderRadius.circular(5),
-                            image: DecorationImage(
-                                image: NetworkImage(snapshot
-                                    .data.docs[index]['url']),
-                                fit: BoxFit.fill)),
-                      ),
-                    ),
-                    Container(
-                      height: height * 0.04,
-                      width: width * 0.7,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                              Radius.circular(3)),
-                          border: Border.all(
-                              color: const Color(0xff3a6c83),
-                              width: 1),
-                          color: AllColors.mainColor),
-                      child: Center(
-                        child: Text(
-                          snapshot.data.docs[index]['title'],
-                          style: TextStyle(
-                              color: Color(0xff313131),
-                              fontWeight: FontWeight.w600,
-                              fontFamily: "Poppins",
-                              fontStyle: FontStyle.normal,
-                              fontSize: 14.0),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: height*0.01,),
-                    Opacity(
-                      opacity: 0.5,
-                      child: Container(
-                          width: 427.5,
-                          height: 1,
-                          decoration: BoxDecoration(
-                              color: const Color(0xffbcbcbc))),
-                    ),
-                    SizedBox(
-                      height: height * 0.03,
+              ? snapshot.data.docs.length != 0
+                  ? ListView.builder(
+                      shrinkWrap: true, // outer ListView
+                      // reverse: true,
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: snapshot.data.docs.length,
+                      itemBuilder: (_, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Transitioner(
+                              context: context,
+                              child: EditPostDetails(
+                                imageUrlE: snapshot.data.docs[index]['url'],
+                                description: snapshot.data.docs[index]
+                                    ['description'],
+                                jobTitle: snapshot.data.docs[index]['title'],
+                                timePublished: snapshot.data.docs[index]
+                                    ['time'],
+                                phone: snapshot.data.docs[index]['phone'],
+                                postedBy: snapshot.data.docs[index]['postedby'],
+                                chatId: snapshot.data.docs[index]['chat_id'],
+                                postId: snapshot.data.docs[index]['post_id'],
+                              ),
+                              animation:
+                                  AnimationType.slideLeft, // Optional value
+                              duration: Duration(
+                                  milliseconds: 1000), // Optional value
+                              replacement: false, // Optional value
+                              curveType: CurveType.decelerate, // Optional value
+                            );
+                          },
+                          child: Column(
+                            children: [
+                              Padding(
+                                padding:
+                                    EdgeInsets.all(height * width * 0.0001),
+                                child: Container(
+                                  height: height * 0.3,
+                                  width: width,
+                                  decoration: BoxDecoration(
+                                      // borderRadius: BorderRadius.circular(5),
+                                      image: DecorationImage(
+                                          image: NetworkImage(
+                                              snapshot.data.docs[index]['url']),
+                                          fit: BoxFit.fill)),
+                                ),
+                              ),
+                              Container(
+                                height: height * 0.04,
+                                width: width * 0.7,
+                                decoration: BoxDecoration(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(3)),
+                                    border: Border.all(
+                                        color: const Color(0xff3a6c83),
+                                        width: 1),
+                                    color: AllColors.mainColor),
+                                child: Center(
+                                  child: Text(
+                                    snapshot.data.docs[index]['title'],
+                                    style: TextStyle(
+                                        color: Color(0xff313131),
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: "Poppins",
+                                        fontStyle: FontStyle.normal,
+                                        fontSize: 14.0),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: height * 0.01,
+                              ),
+                              Opacity(
+                                opacity: 0.5,
+                                child: Container(
+                                    width: 427.5,
+                                    height: 1,
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xffbcbcbc))),
+                              ),
+                              SizedBox(
+                                height: height * 0.03,
+                              )
+                            ],
+                          ),
+                        );
+                      },
                     )
-                  ],
-                ),
-              );
-            },
-          )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: height * 0.5,
+                            width: width * 0.5,
+                            child: Image.asset("assets/images/emty_gify.gif"),
+                          ),
+                          Text("No Upload History",
+                              style: const TextStyle(
+                                fontFamily: 'Lato',
+                                color: Colors.black54,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                fontStyle: FontStyle.normal,
+                              )),
+                        ],
+                      ),
+                    )
               : Container(
-            margin: EdgeInsets.only(top: height * 0.3),
-            child: Center(
-              child: CupertinoActivityIndicator(
-                color: Colors.black,
-              ),
-            ),
-          );
+                  margin: EdgeInsets.only(top: height * 0.3),
+                  child: Center(
+                    child: CupertinoActivityIndicator(
+                      color: Colors.black,
+                    ),
+                  ),
+                );
         },
       ),
     );
   }
-
-
-
 
   _listener() {
     stream = _firestore
@@ -193,7 +205,4 @@ class _EditPostsState extends State<EditPosts> {
       print(data.size);
     });
   }
-
-
-
 }

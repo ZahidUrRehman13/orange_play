@@ -336,7 +336,8 @@ class _PostDetailsState extends State<PostDetails> {
 
                 ],
               ),
-              SizedBox(height: height*0.04,),
+              SizedBox(
+                height: height*0.04,),
               GestureDetector(
                 onTap: (){
                   _showSimpleDialog();
