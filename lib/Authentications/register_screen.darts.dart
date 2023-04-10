@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:orange_play/Authentications/register_screen.darts.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:orange_play/Authentications/login_screen.darts.dart';
 import 'package:orange_play/constants_services/colors_class.dart';
 import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:orange_play/providers/user_provider.dart';
@@ -16,42 +18,52 @@ import 'package:transitioner/transitioner.dart';
 
 import '../mix_screens/chats/user_chat_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
-
-  static const String id = 'login_screen';
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
+  final _name = FocusNode();
   final _emailFocusNode = FocusNode();
   final _passwordFocusNode = FocusNode();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   final _passwordKey = GlobalKey<FormFieldState>();
   final _emailKey = GlobalKey<FormFieldState>();
+  final _nameKey = GlobalKey<FormFieldState>();
 
   TextEditingController? _controllerEmail;
   TextEditingController? _controllerPassword;
+  TextEditingController? _nameController;
+  TextEditingController? _phoneController;
   bool setobsureText = false;
   bool _isLoading = false;
   var credential;
+  String? firebaseUuid;
+  String? phone;
+  String? country = '+971';
 
   @override
   void initState() {
     super.initState();
+    _nameController = TextEditingController();
     _controllerEmail = TextEditingController();
     _controllerPassword = TextEditingController();
+    _phoneController = TextEditingController();
   }
 
   @override
   void dispose() {
     super.dispose();
+    _nameController!.dispose();
     _controllerEmail!.dispose();
     _controllerPassword!.dispose();
+    _phoneController!.dispose();
   }
 
   @override
@@ -84,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
 
                     children: [
-                      Text("Welcome",
+                      Text("Register",
                           style: const TextStyle(
                             fontFamily: 'Poppins',
                             color: Color(0xff313131),
@@ -123,6 +135,54 @@ class _LoginScreenState extends State<LoginScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: _height * 0.02,
+                                horizontal: _width * 0.04),
+                            child: TextFormField(
+                              key: _nameKey,
+                              controller: _nameController,
+                              focusNode: _name,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              cursorColor: Colors.black,
+                              validator: validateName,
+                              onFieldSubmitted: (_) {
+                                FocusScope.of(context)
+                                    .requestFocus(_emailFocusNode);
+                              },
+                              decoration: InputDecoration(
+                                errorMaxLines: 3,
+                                counterText: "",
+                                filled: true,
+                                fillColor: AllColors.mainColor,
+                                focusedBorder: const OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                                  borderSide: BorderSide(
+                                    width: 1,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(5)),
+                                  borderSide: BorderSide(
+                                    // width: 1,
+                                  ),
+                                ),
+                                hintText: "User Name",
+                                // labelText: Languages.of(context)!.email,
+                                hintStyle: const TextStyle(
+                                  fontFamily: 'Arial',
+                                  color: Color(0xff16003b),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  fontStyle: FontStyle.normal,
+                                ),
+                              ),
+                            ),
+                          ),
                           Padding(
                             padding: EdgeInsets.symmetric(
                                 vertical: _height * 0.02,
@@ -241,6 +301,79 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: _height * 0.02,
+                              left: _width * 0.035,
+                              right: _width * 0.035,
+                              bottom: _height * 0.02,
+                            ),
+                            child: Container(
+                              height: _height * 0.1,
+                              child: IntlPhoneField(
+                                controller: _phoneController,
+                                initialCountryCode: 'AE',
+                                cursorColor: Colors.black12,
+                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                decoration: InputDecoration(
+                                  errorMaxLines: 1,
+                                  counterText: "",
+                                  filled: true,
+                                  fillColor: AllColors.mainColor,
+                                  focusedBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  disabledBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  enabledBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  border: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                    ),
+                                  ),
+                                  errorBorder: const OutlineInputBorder(
+                                      borderRadius:
+                                      BorderRadius.all(Radius.circular(5)),
+                                      borderSide: BorderSide(
+                                        width: 1,
+                                        color: Colors.red,
+                                      )),
+                                  focusedErrorBorder: const OutlineInputBorder(
+                                    borderRadius: BorderRadius.all(Radius.circular(5)),
+                                    borderSide: BorderSide(
+                                      width: 1,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  hintText: "Verified Phone Number",
+                                ),
+                                onChanged: (phone) {
+                                  print(phone.completeNumber);
+                                  // _phoneController!.text = phone.completeNumber;
+                                },
+                                onCountryChanged: (phone) {
+                                  print('Country code changed to: ' + phone.dialCode);
+                                  country = phone.dialCode;
+                                },
+                              ),
+                            ),
+                          ),
                           // GestureDetector(
                           //     onTap: () {
                           //       Navigator.push(
@@ -255,54 +388,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: ()async{
-                      try {
-                        return await  FirebaseAuth.instance.sendPasswordResetEmail(email: "zahidrehman507@gmail.com");
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
-                    child: Padding(
-                      padding:EdgeInsets.only(
-                          top: _height * 0.02,
-                          left: _width * 0.04,
-                          right: _width * 0.04),
-                      child: Container(
-                        height: _height * 0.075,
-                        width: _width ,
-                        // decoration: BoxDecoration(
-                        //   borderRadius: BorderRadius.all(Radius.circular(5)),
-                        //   gradient: const LinearGradient(
-                        //       begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                        //       end: Alignment(1.3960868120193481, 1.4281718730926514),
-                        //       colors: [Color(0xff4a54be), Color(0xff48bc71)]),
-                        // ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              "Reset Password",
-                              style: TextStyle(
-                                  color: Colors.black, fontSize: _width * 0.04),
-                              textAlign: TextAlign.end,
-                            ),
-                            Container(
-                                width:_width*0.29,
-                                height: 1,
-                                decoration: BoxDecoration(
-                                    color:  Colors.black))
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
                     onTap: (){
                       handleLoginUser();
                     },
                     child: Padding(
                       padding:EdgeInsets.only(
-                          top: _height * 0.01,
+                          top: _height * 0.03,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
@@ -317,7 +408,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: Center(
                           child: Text(
-                            "Login",
+                            "Register",
                             style: TextStyle(
                                 color: Colors.white, fontSize: _width * 0.04),
                           )
@@ -329,7 +420,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: (){
                       Transitioner(
                         context: context,
-                        child: const RegisterScreen(),
+                        child: const LoginScreen(),
                         animation: AnimationType.slideLeft, // Optional value
                         duration:
                         const Duration(milliseconds: 1000), // Optional value
@@ -339,25 +430,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: Padding(
                       padding:EdgeInsets.only(
-                          top: _height * 0.04,
+                          top: _height * 0.05,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
                         height: _height * 0.075,
                         width: _width ,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                          gradient: const LinearGradient(
-                              begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                              end: Alignment(1.3960868120193481, 1.4281718730926514),
-                              colors: [Color(0xff4a54be), Color(0xff48bc71)]),
-                        ),
-                        child: Center(
-                            child: Text(
-                              "Register",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: _width * 0.04),
-                            )
+                        // decoration: BoxDecoration(
+                        //   borderRadius: BorderRadius.all(Radius.circular(5)),
+                        //   gradient: const LinearGradient(
+                        //       begin: Alignment(-0.03018629550933838, -0.02894212305545807),
+                        //       end: Alignment(1.3960868120193481, 1.4281718730926514),
+                        //       colors: [Color(0xff4a54be), Color(0xff48bc71)]),
+                        // ),
+                        child: Text(
+                          "Already have an account Login",
+                          style: TextStyle(
+                              color: Colors.black, fontSize: _width * 0.04),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
@@ -397,6 +487,15 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!regex.hasMatch(value)) {
       return "enter valid email";
     } else {
+      return null;
+    }
+  }
+
+  String? validateName(String? value) {
+    if (value!.isEmpty) {
+      return "enter valid email";
+    }
+    else {
       return null;
     }
   }
@@ -457,61 +556,80 @@ class _LoginScreenState extends State<LoginScreen> {
     SystemChannels.textInput.invokeMethod('TextInput.hide');
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      login();
+      Register();
     } else {}
   }
 
-  void login() async {
+  void Register() async {
     setState(() {
       _isLoading = true;
     });
-        try {
-           await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: _controllerEmail!.text.trim().toString(),
-            password: _controllerPassword!.text.trim().toString(),
-          ).then((value) {
-            if (value.user != null) {
-              setState(() {
-                _isLoading = false;
-              });
-              context
-                  .read<UserProvider>()
-                  .setUserEmail(value.user!.email.toString());
-              navigate();
-            }
-          });
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'user-not-found') {
-            Fluttertoast.showToast(
-                msg: "user not found please register",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                fontSize: 13.0
-            );
-            setState(() {
-              _isLoading = false;
-            });
-            print('No user found for that email.');
-          } else if (e.code == 'wrong-password') {
-            print('Wrong password provided for that user.');
-            Fluttertoast.showToast(
-                msg: "Incorrect password or email",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                fontSize: 13.0
-            );
-            setState(() {
-              _isLoading = false;
-            });
-          }
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: _controllerEmail!.text.trim().toString(),
+        password: _controllerPassword!.text.trim().toString(),
+      )
+          .then((value) {
+        if (value.user != null) {
+
+          _firebaseUniqueIDs();
+
+          context
+              .read<UserProvider>()
+              .setUserEmail(value.user!.email.toString());
         }
-     catch (e) {
-      print(e);
-    }
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        Fluttertoast.showToast(
+            msg: "The password provided is too weak.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 13.0
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        Fluttertoast.showToast(
+            msg: "The account already exists for that email.",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 13.0
+        );
+        setState(() {
+          _isLoading = false;
+        });
+      }
+  }
+  }
+
+  _firebaseUniqueIDs() async{
+    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
+    print("firebaseUuid: $firebaseUuid");
+    sendUserInfo();
+  }
+
+  sendUserInfo() async {
+    _firestore
+        .collection("User")
+        .doc(firebaseUuid).set({
+      "user_email": _controllerEmail!.text.trim().toString(),
+      "user_name": _nameController!.text.trim().toString(),
+      "user_phone": "${country! + _phoneController!.text}",
+
+    });
+    setState(() {
+      _isLoading = false;
+    });
+    navigate();
   }
 
 
@@ -527,11 +645,4 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  Future<void> resetPassword({required String email}) async {
-    try {
-      return await  FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      print(e); // showError(title: '...', error: e);
-    }
-  }
 }

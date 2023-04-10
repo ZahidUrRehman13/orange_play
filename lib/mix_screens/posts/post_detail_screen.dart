@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -157,11 +158,47 @@ class _PostDetailsState extends State<PostDetails> {
                               ? CircleAvatar(
                             radius: height*width*0.000045,
                             backgroundColor: const Color(0xff3a6c83),
-                            child: CircleAvatar(
-                              backgroundImage: NetworkImage(snapshot
-                                  .data!["profile_image_url"]
-                                  .toString()),
-                              radius: height*width*0.00004,
+                            // child: CircleAvatar(
+                            //   backgroundImage: NetworkImage(snapshot
+                            //       .data!["profile_image_url"]
+                            //       .toString()),
+                            //   radius: height*width*0.00004,
+                            // ),
+                            child: Container(
+                              child: CachedNetworkImage(
+                                filterQuality:
+                                FilterQuality.high,
+                                imageBuilder: (context,
+                                    imageProvider) =>
+                                    Container(
+                                      height: height*0.1,
+                                      width: width*0.1,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+
+                                        image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.cover),
+                                      ),
+                                    ),
+                                imageUrl:snapshot
+                                    .data!["profile_image_url"]
+                                    .toString(),
+                                fit: BoxFit.cover,
+                                placeholder: (context,
+                                    url) =>
+                                const Center(
+                                    child:
+                                    CupertinoActivityIndicator(
+                                      color:
+                                      Color(0xFF256D85),
+                                    )),
+                                errorWidget: (context,
+                                    url, error) =>
+                                const Center(
+                                    child: Icon(Icons
+                                        .error_outline)),
+                              ),
                             ),
                           )
                               : CircleAvatar(

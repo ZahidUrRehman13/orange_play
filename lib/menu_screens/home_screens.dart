@@ -316,12 +316,45 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         height: height * 0.4,
                                         width: width,
-                                        decoration: BoxDecoration(
-                                            // borderRadius: BorderRadius.circular(5),
-                                            image: DecorationImage(
-                                                image: NetworkImage(snapshot
-                                                    .data.docs[index]['url']),
-                                                fit: BoxFit.fill)),
+                                        // decoration: BoxDecoration(
+                                        //     // borderRadius: BorderRadius.circular(5),
+                                        //     image: DecorationImage(
+                                        //         image: NetworkImage(snapshot
+                                        //             .data.docs[index]['url']),
+                                        //         fit: BoxFit.fill)),
+                                        child: CachedNetworkImage(
+                                          filterQuality:
+                                          FilterQuality.high,
+                                          imageBuilder: (context,
+                                              imageProvider) =>
+                                              Container(
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.rectangle,
+                                                  borderRadius:
+                                                  BorderRadius.circular(
+                                                      0),
+                                                  image: DecorationImage(
+                                                      image: imageProvider,
+                                                      fit: BoxFit.cover),
+                                                ),
+                                              ),
+                                          imageUrl:snapshot
+                                              .data.docs[index]['url'],
+                                          fit: BoxFit.cover,
+                                          placeholder: (context,
+                                              url) =>
+                                          const Center(
+                                              child:
+                                              CupertinoActivityIndicator(
+                                                color:
+                                                Color(0xFF256D85),
+                                              )),
+                                          errorWidget: (context,
+                                              url, error) =>
+                                          const Center(
+                                              child: Icon(Icons
+                                                  .error_outline)),
+                                        ),
                                       ),
                                     ),
                                     Positioned(

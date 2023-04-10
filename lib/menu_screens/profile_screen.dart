@@ -34,12 +34,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Stream? stream;
   final _emailKey = GlobalKey<FormFieldState>();
   final _phoneKey = GlobalKey<FormFieldState>();
+  final _nameKey = GlobalKey<FormFieldState>();
+
+
   TextEditingController? _emailController;
   TextEditingController? _phoneController;
+  TextEditingController? _nameController;
   var user;
   String? userID;
   bool _isProgress= false;
   String? profileUrl;
+  String? firebaseUuid;
 
   @override
   void initState() {
@@ -48,8 +53,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _generateUniqueIDs();
     initFirebase();
     initImageUrl();
+    _firebaseUniqueIDs();
     _emailController = new TextEditingController();
     _phoneController = new TextEditingController();
+    _nameController = new TextEditingController();
 
   }
 
@@ -72,7 +79,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     user = await FirebaseAuth.instance.currentUser;
     _emailController!.text=FirebaseAuth.instance.currentUser!.email.toString();
-    _phoneController!.text=FirebaseAuth.instance.currentUser!.email.toString();
+
+  }
+
+  _firebaseUniqueIDs() async{
+    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
+    print("firebaseUuid: $firebaseUuid");
+    _listener();
+  }
+
+  _listener() {
+    var data = _firestore
+        .collection("User")
+        .doc(firebaseUuid)
+        .get()
+        .then((DocumentSnapshot doc){
+          _nameController!.text= doc.get("user_name");
+          _phoneController!.text= doc.get("user_phone");
+    } );
 
   }
 
@@ -80,10 +104,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void dispose() {
     _emailController!.dispose();
     _phoneController!.dispose();
+    _nameController!.dispose();
     super.dispose();
   }
-
-
 
 
   @override
@@ -250,41 +273,71 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.only(
-            //       top: _height * 0.04,
-            //       left: _width * 0.02,
-            //       right: _width * 0.02),
-            //   child: TextFormField(
-            //     key: _phoneKey,
-            //     controller: _phoneController,
-            //     keyboardType:
-            //     TextInputType.multiline,
-            //     maxLines: 1,
-            //     textInputAction:
-            //     TextInputAction.next,
-            //     cursorColor: Colors.black,
-            //     decoration: InputDecoration(
-            //       filled: true,
-            //       fillColor: Colors.white,
-            //       // labelText: widget.labelText,
-            //       enabledBorder: OutlineInputBorder(
-            //         borderSide: const BorderSide(
-            //             width: 1,
-            //             color: Colors.black),
-            //         borderRadius:
-            //         BorderRadius.circular(1),
-            //       ),
-            //       focusedBorder: OutlineInputBorder(
-            //         borderSide: const BorderSide(
-            //             width: 1,
-            //             color: Colors.black),
-            //         borderRadius:
-            //         BorderRadius.circular(1),
-            //       ),
-            //     ),
-            //   ),
-            // ),
+            Padding(
+              padding:EdgeInsets.only(
+                  top: _height * 0.04,
+                  left: _width * 0.02,
+                  right: _width * 0.02),
+              child: TextFormField(
+                key: _nameKey,
+                controller: _nameController,
+                keyboardType: TextInputType.text,
+                textInputAction:
+                TextInputAction.next,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding:EdgeInsets.only(
+                  top: _height * 0.04,
+                  left: _width * 0.02,
+                  right: _width * 0.02),
+              child: TextFormField(
+                key: _phoneKey,
+                controller: _phoneController,
+                keyboardType: TextInputType.text,
+                textInputAction:
+                TextInputAction.next,
+                cursorColor: Colors.black,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(
+                        width: 1,
+                        color: Colors.black),
+                    borderRadius:
+                    BorderRadius.circular(1),
+                  ),
+                ),
+              ),
+            ),
+
             SizedBox(
               height: _height * 0.02,
             ),
@@ -425,16 +478,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
         "profile_image_url": url,
       });
 
-      Fluttertoast.showToast(
-        backgroundColor: Colors.black,
-        textColor: Colors.white,
-        gravity: ToastGravity.CENTER,
-        msg: "Your Email changed Successfully",);
+      updateAll();
 
 
-      setState(() {
-        _isProgress=false;
-      });
 
 
     } catch(err) {
@@ -448,6 +494,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
       print(err);
     }
+  }
+
+  updateAll() async {
+
+    _firestore
+        .collection("User")
+        .doc(firebaseUuid)
+        .update({
+      "user_email": _emailController!.text.trim().toString(),
+      "user_name": _nameController!.text.trim().toString(),
+      "user_phone": _phoneController!.text.trim().toString(),
+    });
+
+    Fluttertoast.showToast(
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      gravity: ToastGravity.CENTER,
+      msg: "Your Profile Updated Successfully",);
+
+
+    setState(() {
+      _isProgress=false;
+    });
+    navigate();
   }
 
   void navigate() {
