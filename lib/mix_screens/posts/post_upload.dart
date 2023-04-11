@@ -426,7 +426,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   userPost() async {
     _firestore
         .collection("User")
-        .doc("Upload")
+        .doc(firebaseUuid)
         .collection("data")
         .doc(firebaseUuid!+UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),

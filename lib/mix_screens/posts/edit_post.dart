@@ -23,11 +23,18 @@ class _EditPostsState extends State<EditPosts> {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Stream? stream;
   String? UniqueIDs;
+  String? firebaseUuid;
 
   @override
   void initState() {
-    _listener();
+    _firebaseUniqueIDs();
     super.initState();
+  }
+
+  _firebaseUniqueIDs() async{
+    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
+    print("firebaseUuid: $firebaseUuid");
+    _listener();
   }
 
   @override
@@ -196,7 +203,7 @@ class _EditPostsState extends State<EditPosts> {
   _listener() {
     stream = _firestore
         .collection("User")
-        .doc("Upload")
+        .doc(firebaseUuid)
         .collection("data")
         .orderBy("time", descending: true)
         .snapshots(); //retrieve all clients

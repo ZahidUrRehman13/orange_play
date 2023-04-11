@@ -431,7 +431,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
     //user data updated
     _firestore
         .collection("User")
-        .doc("Upload")
+        .doc(firebaseUuid)
         .collection("data")
         .doc(widget.postId)
         .update({
@@ -462,7 +462,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
     //user data updated
     _firestore
         .collection("User")
-        .doc("Upload")
+        .doc(firebaseUuid)
         .collection("data")
         .doc(widget.postId)
         .delete();
