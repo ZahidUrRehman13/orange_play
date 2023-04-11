@@ -73,6 +73,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
           child: Container(
             color: AllColors.mainColor,
             child: Center(
@@ -80,9 +81,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(
-                    height: _height * 0.02,
-                  ),
+
                   Container(
                     height: _height*0.2,
                     width: _width,
@@ -125,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ],
                   ),
                   SizedBox(
-                    height: _height * 0.1,
+                    height: _height * 0.05,
                   ),
                   Container(
                     child: Form(
@@ -393,7 +392,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     },
                     child: Padding(
                       padding:EdgeInsets.only(
-                          top: _height * 0.03,
+                          top: _height * 0.01,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
@@ -464,7 +463,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: _height * 0.275,
+                    height: _height * 0.01,
                   )
                 ],
               ),

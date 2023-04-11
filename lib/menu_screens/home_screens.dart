@@ -88,15 +88,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AllColors.mainColor,
       appBar: AppBar(
-        leading: Container(),
-        title: const Text("Home",
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              color: Color(0xFFe4e6fb),
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              fontStyle: FontStyle.normal,
-            )),
+        title: Column(
+          children: [
+            SizedBox(height: height*0.01,),
+            const Text("Home",
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: Color(0xFFe4e6fb),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  fontStyle: FontStyle.normal,
+                )),
+          ],
+        ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -148,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               .snapshots(),
                           builder: (context, snapshot) {
 
-                            return snapshot.hasData
+                            return snapshot.hasData && snapshot.data!.exists
                                 ? Text(snapshot.data!["count"].toString())
                                 : Text("0");
 
@@ -347,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               child:
                                               CupertinoActivityIndicator(
                                                 color:
-                                                Color(0xFF256D85),
+                                                Colors.black,
                                               )),
                                           errorWidget: (context,
                                               url, error) =>
@@ -495,23 +499,28 @@ class _HomeScreenState extends State<HomeScreen> {
                                           SizedBox(
                                             width: width * 0.02,
                                           ),
-                                          Container(
-                                              width: width * 0.1,
-                                              height: height * 0.04,
-                                              child: Center(
-                                                  child: Icon(
-                                                Icons.share,
-                                                color: Colors.blueAccent,
-                                              )),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.all(
-                                                          Radius.circular(3)),
-                                                  border: Border.all(
-                                                      color: const Color(
-                                                          0xff3a6c83),
-                                                      width: 2),
-                                                  color: AllColors.mainColor)),
+                                          GestureDetector(
+                                            onTap: (){
+                                              Share.share('https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
+                                            },
+                                            child: Container(
+                                                width: width * 0.1,
+                                                height: height * 0.04,
+                                                child: Center(
+                                                    child: Icon(
+                                                  Icons.share,
+                                                  color: Colors.blueAccent,
+                                                )),
+                                                decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(3)),
+                                                    border: Border.all(
+                                                        color: const Color(
+                                                            0xff3a6c83),
+                                                        width: 2),
+                                                    color: AllColors.mainColor)),
+                                          ),
                                         ],
                                       )
                                     ],
@@ -625,7 +634,7 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: null,
             child: const Icon(Icons.share),
             onPressed: () {
-              Share.share('www.novelflex.com');
+              Share.share('https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
             },
           ),
           FloatingActionButton.small(

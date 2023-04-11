@@ -121,12 +121,44 @@ class _PostDetailsState extends State<PostDetails> {
               Container(
                 height: height*0.4,
                 width: width,
-                decoration: BoxDecoration(
-                    // borderRadius: BorderRadius.circular(5),
-                    image: DecorationImage(
-                        image: NetworkImage(widget.imageUrl),
-                        fit: BoxFit.fill
-                    )
+                // decoration: BoxDecoration(
+                //     // borderRadius: BorderRadius.circular(5),
+                //     image: DecorationImage(
+                //         image: NetworkImage(widget.imageUrl),
+                //         fit: BoxFit.fill
+                //     )
+                // ),
+                child: CachedNetworkImage(
+                  filterQuality:
+                  FilterQuality.high,
+                  imageBuilder: (context,
+                      imageProvider) =>
+                      Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.rectangle,
+                          borderRadius:
+                          BorderRadius.circular(
+                              0),
+                          image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover),
+                        ),
+                      ),
+                  imageUrl:widget.imageUrl,
+                  fit: BoxFit.cover,
+                  placeholder: (context,
+                      url) =>
+                  const Center(
+                      child:
+                      CupertinoActivityIndicator(
+                        color:
+                        Color(0xFF256D85),
+                      )),
+                  errorWidget: (context,
+                      url, error) =>
+                  const Center(
+                      child: Icon(Icons
+                          .error_outline)),
                 ),
               ),
               Opacity(
@@ -227,11 +259,11 @@ class _PostDetailsState extends State<PostDetails> {
                         ),
                         SizedBox(width: width*0.02,),
                         Text(widget.postedBy,style: const TextStyle(
-                            color:  const Color(0xff202124),
-                            fontWeight: FontWeight.w700,
-                            fontFamily: "Neckar",
+                            color:  const Color(0xff676767),
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Lato",
                             fontStyle:  FontStyle.normal,
-                            fontSize: 14.0
+                            fontSize: 12.0
                         ),),
                       ],
                     ),
@@ -314,24 +346,31 @@ class _PostDetailsState extends State<PostDetails> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text("Advertisement Title:"),
-                      SizedBox(height: height*0.03,),
-                      Text("Posted Date & Time:",),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Text("Advertisement Title:",style: TextStyle(fontWeight: FontWeight.w800),),
+                        SizedBox(height: height*0.03,),
+                        Text("Posted Date & Time:",style: TextStyle(fontWeight: FontWeight.w800),),
 
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(width: width*0.03,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.jobTitle),
-                      SizedBox(height: height*0.03,),
-                      Text(parseTimeStamp(widget.timePublished)),
-                          ],
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(widget.jobTitle,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,),
+                        SizedBox(height: height*0.03,),
+                        Text(parseTimeStamp(widget.timePublished)),
+                            ],
+                    ),
                   )
 
                 ],

@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:orange_play/Authentications/register_screen.darts.dart';
+import 'package:orange_play/Authentications/reset_password.dart';
 import 'package:orange_play/constants_services/colors_class.dart';
 import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:orange_play/providers/user_provider.dart';
@@ -39,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool setobsureText = false;
   bool _isLoading = false;
   var credential;
+  final _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
@@ -61,6 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: NeverScrollableScrollPhysics(),
           child: Container(
             color: AllColors.mainColor,
             child: Center(
@@ -72,17 +75,15 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: _height * 0.02,
                   ),
                   Container(
-                    height: _height*0.2,
+                    height: _height * 0.2,
                     width: _width,
                     decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage("assets/images/advertisement.gif")
-                      )
-                    ),
+                        image: DecorationImage(
+                            image:
+                                AssetImage("assets/images/advertisement.gif"))),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
                       Text("Welcome",
                           style: const TextStyle(
@@ -92,7 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w800,
                             fontStyle: FontStyle.italic,
                           )),
-                      SizedBox(width: _width*0.01,),
+                      SizedBox(
+                        width: _width * 0.01,
+                      ),
                       Text("To",
                           style: const TextStyle(
                             fontFamily: 'Poppins',
@@ -101,14 +104,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             fontWeight: FontWeight.w800,
                             fontStyle: FontStyle.italic,
                           )),
-                      SizedBox(width: _width*0.01,),
+                      SizedBox(
+                        width: _width * 0.01,
+                      ),
                       Text("𝘦𝘈𝘥𝘷𝘦𝘳𝘵𝘪𝘴𝘦",
                           style: const TextStyle(
                             fontFamily: 'Poppins',
                             color: Color(0xff313131),
                             fontSize: 20,
                             fontWeight: FontWeight.w800,
-
                           ))
                     ],
                   ),
@@ -255,21 +259,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: ()async{
-                      try {
-                        return await  FirebaseAuth.instance.sendPasswordResetEmail(email: "zahidrehman507@gmail.com");
-                      } catch (e) {
-                        print(e);
-                      }
+                    onTap: () {
+                      Transitioner(
+                        context: context,
+                        child: ResetPassword(),
+                        animation: AnimationType.slideLeft, // Optional value
+                        duration: const Duration(milliseconds: 1000), // Optional value
+                        replacement: false, // Optional value
+                        curveType: CurveType.decelerate, // Optional value
+                      );
                     },
                     child: Padding(
-                      padding:EdgeInsets.only(
+                      padding: EdgeInsets.only(
                           top: _height * 0.02,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
                         height: _height * 0.075,
-                        width: _width ,
+                        width: _width,
                         // decoration: BoxDecoration(
                         //   borderRadius: BorderRadius.all(Radius.circular(5)),
                         //   gradient: const LinearGradient(
@@ -287,78 +294,79 @@ class _LoginScreenState extends State<LoginScreen> {
                               textAlign: TextAlign.end,
                             ),
                             Container(
-                                width:_width*0.29,
+                                width: _width * 0.29,
                                 height: 1,
-                                decoration: BoxDecoration(
-                                    color:  Colors.black))
+                                decoration: BoxDecoration(color: Colors.black))
                           ],
                         ),
                       ),
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       handleLoginUser();
                     },
                     child: Padding(
-                      padding:EdgeInsets.only(
+                      padding: EdgeInsets.only(
                           top: _height * 0.01,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
                         height: _height * 0.075,
-                        width: _width ,
+                        width: _width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                           gradient: const LinearGradient(
-                              begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                              end: Alignment(1.3960868120193481, 1.4281718730926514),
+                              begin: Alignment(
+                                  -0.03018629550933838, -0.02894212305545807),
+                              end: Alignment(
+                                  1.3960868120193481, 1.4281718730926514),
                               colors: [Color(0xff4a54be), Color(0xff48bc71)]),
                         ),
                         child: Center(
-                          child: Text(
-                            "Login",
-                            style: TextStyle(
-                                color: Colors.white, fontSize: _width * 0.04),
-                          )
-                        ),
+                            child: Text(
+                          "Login",
+                          style: TextStyle(
+                              color: Colors.white, fontSize: _width * 0.04),
+                        )),
                       ),
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Transitioner(
                         context: context,
                         child: const RegisterScreen(),
                         animation: AnimationType.slideLeft, // Optional value
-                        duration:
-                        const Duration(milliseconds: 1000), // Optional value
+                        duration: const Duration(
+                            milliseconds: 1000), // Optional value
                         replacement: false, // Optional value
                         curveType: CurveType.decelerate, // Optional value
                       );
                     },
                     child: Padding(
-                      padding:EdgeInsets.only(
+                      padding: EdgeInsets.only(
                           top: _height * 0.04,
                           left: _width * 0.04,
                           right: _width * 0.04),
                       child: Container(
                         height: _height * 0.075,
-                        width: _width ,
+                        width: _width,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(5)),
                           gradient: const LinearGradient(
-                              begin: Alignment(-0.03018629550933838, -0.02894212305545807),
-                              end: Alignment(1.3960868120193481, 1.4281718730926514),
+                              begin: Alignment(
+                                  -0.03018629550933838, -0.02894212305545807),
+                              end: Alignment(
+                                  1.3960868120193481, 1.4281718730926514),
                               colors: [Color(0xff4a54be), Color(0xff48bc71)]),
                         ),
                         child: Center(
                             child: Text(
-                              "Register",
-                              style: TextStyle(
-                                  color: Colors.white, fontSize: _width * 0.04),
-                            )
-                        ),
+                          "Register",
+                          style: TextStyle(
+                              color: Colors.white, fontSize: _width * 0.04),
+                        )),
                       ),
                     ),
                   ),
@@ -374,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(
-                    height: _height * 0.275,
+                    height: _height * 0.065,
                   )
                 ],
               ),
@@ -465,60 +473,58 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
-        try {
-           await FirebaseAuth.instance.signInWithEmailAndPassword(
-            email: _controllerEmail!.text.trim().toString(),
-            password: _controllerPassword!.text.trim().toString(),
-          ).then((value) {
-            if (value.user != null) {
-              setState(() {
-                _isLoading = false;
-              });
-              context
-                  .read<UserProvider>()
-                  .setUserEmail(value.user!.email.toString());
-              navigate();
-            }
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: _controllerEmail!.text.trim().toString(),
+        password: _controllerPassword!.text.trim().toString(),
+      )
+          .then((value) {
+        if (value.user != null) {
+          setState(() {
+            _isLoading = false;
           });
-        } on FirebaseAuthException catch (e) {
-          if (e.code == 'user-not-found') {
-            Fluttertoast.showToast(
-                msg: "user not found please register",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                fontSize: 13.0
-            );
-            setState(() {
-              _isLoading = false;
-            });
-            print('No user found for that email.');
-          } else if (e.code == 'wrong-password') {
-            print('Wrong password provided for that user.');
-            Fluttertoast.showToast(
-                msg: "Incorrect password or email",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                backgroundColor: Colors.black,
-                textColor: Colors.white,
-                fontSize: 13.0
-            );
-            setState(() {
-              _isLoading = false;
-            });
-          }
+          context
+              .read<UserProvider>()
+              .setUserEmail(value.user!.email.toString());
+          navigate();
         }
-     catch (e) {
+      });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        Fluttertoast.showToast(
+            msg: "user not found please register",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 13.0);
+        setState(() {
+          _isLoading = false;
+        });
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+        Fluttertoast.showToast(
+            msg: "Incorrect password or email",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: Colors.black,
+            textColor: Colors.white,
+            fontSize: 13.0);
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
       print(e);
     }
   }
 
-
   void navigate() {
     Transitioner(
       context: context,
-      child:  HomeScreen(),
+      child: HomeScreen(),
       animation: AnimationType.slideLeft, // Optional value
       duration: const Duration(milliseconds: 1000), // Optional value
       replacement: true, // Optional value
@@ -527,11 +533,4 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 
-  Future<void> resetPassword({required String email}) async {
-    try {
-      return await  FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-    } catch (e) {
-      print(e); // showError(title: '...', error: e);
-    }
-  }
 }
