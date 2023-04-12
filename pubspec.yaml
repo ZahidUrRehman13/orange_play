@@ -61,6 +61,7 @@ dependencies:
   flutter_expandable_fab: ^1.7.1
   uuid: ^3.0.6
   share_plus: ^6.3.1
+  google_mobile_ads: ^2.4.0
 
 dev_dependencies:
   flutter_test:

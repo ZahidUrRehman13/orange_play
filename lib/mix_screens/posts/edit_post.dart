@@ -4,9 +4,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:orange_play/menu_screens/home_screens.dart';
 import 'package:provider/provider.dart';
 import 'package:transitioner/transitioner.dart';
 
+import '../../ad_helper.dart';
 import '../../constants_services/colors_class.dart';
 import '../../providers/user_provider.dart';
 import 'edit_post_detail_screen.dart';
@@ -24,18 +27,56 @@ class _EditPostsState extends State<EditPosts> {
   Stream? stream;
   String? UniqueIDs;
   String? firebaseUuid;
+  InterstitialAd? _interstitialAd;
 
   @override
   void initState() {
-    _firebaseUniqueIDs();
+    // _firebaseUniqueIDs();
+    _loadInterstitialAd();
     super.initState();
   }
 
-  _firebaseUniqueIDs() async{
-    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
-    print("firebaseUuid: $firebaseUuid");
-    _listener();
+  @override
+  void dispose() {
+    _interstitialAd?.dispose();
+    super.dispose();
   }
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdHelper.interstitialAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              Transitioner(
+                context: context,
+                child: HomeScreen(),
+                animation: AnimationType.slideLeft, // Optional value
+                duration: Duration(milliseconds: 1000), // Optional value
+                replacement: false, // Optional value
+                curveType: CurveType.decelerate, // Optional value
+              );
+            },
+          );
+
+          setState(() {
+            _interstitialAd = ad;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load an interstitial ad: ${err.message}');
+        },
+      ),
+    );
+  }
+
+  // _firebaseUniqueIDs() async{
+  //   firebaseUuid = await FirebaseAuth.instance.currentUser!.email;
+  //   print("firebaseUuid: $firebaseUuid");
+  //   // _listener();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +114,12 @@ class _EditPostsState extends State<EditPosts> {
         // centerTitle: true,
       ),
       body: StreamBuilder(
-        stream: stream,
+        stream: _firestore
+            .collection("User")
+            .doc(FirebaseAuth.instance.currentUser!.email)
+            .collection("data")
+            .orderBy("time", descending: true)
+            .snapshots(),
         builder: (context, AsyncSnapshot snapshot) {
           return snapshot.hasData
               ? snapshot.data.docs.length != 0
@@ -85,27 +131,33 @@ class _EditPostsState extends State<EditPosts> {
                       itemBuilder: (_, index) {
                         return GestureDetector(
                           onTap: () {
-                            Transitioner(
-                              context: context,
-                              child: EditPostDetails(
-                                imageUrlE: snapshot.data.docs[index]['url'],
-                                description: snapshot.data.docs[index]
-                                    ['description'],
-                                jobTitle: snapshot.data.docs[index]['title'],
-                                timePublished: snapshot.data.docs[index]
-                                    ['time'],
-                                phone: snapshot.data.docs[index]['phone'],
-                                postedBy: snapshot.data.docs[index]['postedby'],
-                                chatId: snapshot.data.docs[index]['chat_id'],
-                                postId: snapshot.data.docs[index]['post_id'],
-                              ),
-                              animation:
-                                  AnimationType.slideLeft, // Optional value
-                              duration: Duration(
-                                  milliseconds: 1000), // Optional value
-                              replacement: false, // Optional value
-                              curveType: CurveType.decelerate, // Optional value
-                            );
+
+                            _loadInterstitialAd();
+                            if (_interstitialAd != null) {
+                              _interstitialAd?.show();
+                            } else {
+                              Transitioner(
+                                context: context,
+                                child: EditPostDetails(
+                                  imageUrlE: snapshot.data.docs[index]['url'],
+                                  description: snapshot.data.docs[index]
+                                  ['description'],
+                                  jobTitle: snapshot.data.docs[index]['title'],
+                                  timePublished: snapshot.data.docs[index]
+                                  ['time'],
+                                  phone: snapshot.data.docs[index]['phone'],
+                                  postedBy: snapshot.data.docs[index]['postedby'],
+                                  chatId: snapshot.data.docs[index]['chat_id'],
+                                  postId: snapshot.data.docs[index]['post_id'],
+                                ),
+                                animation:
+                                AnimationType.slideLeft, // Optional value
+                                duration: Duration(
+                                    milliseconds: 1000), // Optional value
+                                replacement: false, // Optional value
+                                curveType: CurveType.decelerate, // Optional value
+                              );
+                            }
                           },
                           child: Column(
                             children: [
@@ -187,29 +239,14 @@ class _EditPostsState extends State<EditPosts> {
                         ],
                       ),
                     )
-              : Container(
-                  margin: EdgeInsets.only(top: height * 0.3),
-                  child: Center(
-                    child: CupertinoActivityIndicator(
-                      color: Colors.black,
-                    ),
-                  ),
-                );
+              : Center(
+                child: CupertinoActivityIndicator(
+                  color: Colors.black,
+                ),
+              );
         },
       ),
     );
   }
 
-  _listener() {
-    stream = _firestore
-        .collection("User")
-        .doc(firebaseUuid)
-        .collection("data")
-        .orderBy("time", descending: true)
-        .snapshots(); //retrieve all clients
-
-    stream!.listen((data) {
-      print(data.size);
-    });
-  }
 }

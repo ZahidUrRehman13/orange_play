@@ -61,7 +61,6 @@ class _EditPostDetailsState extends State<EditPostDetails> {
   var pathImage;
   var imageUrl;
   bool _isLoading = false;
-  String? firebaseUuid;
 
   final descriptionKey = GlobalKey<FormFieldState>();
   final _phoneKey = GlobalKey<FormFieldState>();
@@ -73,7 +72,6 @@ class _EditPostDetailsState extends State<EditPostDetails> {
   @override
   void initState() {
     super.initState();
-    _firebaseUniqueIDs();
     _descriptionController = new TextEditingController();
     _phoneController = new TextEditingController();
     _titleController = new TextEditingController();
@@ -358,7 +356,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
       var snapshot = await _firebaseStorage
           .ref()
           .child(
-              "images/Home/$firebaseUuid/$_diceface/${context.read<UserProvider>().UserEmail}/$fileName")
+              "images/Home/${FirebaseAuth.instance.currentUser!.email}/$_diceface/${context.read<UserProvider>().UserEmail}/$fileName")
           .putFile(imageFile!);
       var downloadUrl = await snapshot.ref.getDownloadURL();
       setState(() {
@@ -389,10 +387,6 @@ class _EditPostDetailsState extends State<EditPostDetails> {
     }
   }
 
-  _firebaseUniqueIDs() async{
-    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
-    print("firebaseUuid: $firebaseUuid");
-  }
 
   Future<void> _retrievePath() async {
     final prefs = await SharedPreferences.getInstance();
@@ -431,7 +425,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
     //user data updated
     _firestore
         .collection("User")
-        .doc(firebaseUuid)
+        .doc(FirebaseAuth.instance.currentUser!.email)
         .collection("data")
         .doc(widget.postId)
         .update({
@@ -462,7 +456,7 @@ class _EditPostDetailsState extends State<EditPostDetails> {
     //user data updated
     _firestore
         .collection("User")
-        .doc(firebaseUuid)
+        .doc(FirebaseAuth.instance.currentUser!.email)
         .collection("data")
         .doc(widget.postId)
         .delete();

@@ -88,19 +88,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AllColors.mainColor,
       appBar: AppBar(
-        title: Column(
-          children: [
-            SizedBox(height: height*0.01,),
-            const Text("Home",
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  color: Color(0xFFe4e6fb),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w800,
-                  fontStyle: FontStyle.normal,
-                )),
-          ],
-        ),
+        title:  Text("Home",
+          style: TextStyle(
+            fontFamily: 'Poppins',
+            color: Color(0xFFe4e6fb),
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            fontStyle: FontStyle.normal,
+          ),
+          textAlign: TextAlign.end,),
+        leading: SizedBox(
+          height: height*0.05,
+            child: Image.asset("assets/images/icon-removebg-preview.png")),
+        centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: const LinearGradient(

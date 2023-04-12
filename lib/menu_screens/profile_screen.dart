@@ -90,7 +90,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   _listener() {
     var data = _firestore
-        .collection("User")
+        .collection("RegisterUser")
         .doc(firebaseUuid)
         .get()
         .then((DocumentSnapshot doc){

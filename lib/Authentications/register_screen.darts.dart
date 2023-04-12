@@ -305,7 +305,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               top: _height * 0.02,
                               left: _width * 0.035,
                               right: _width * 0.035,
-                              bottom: _height * 0.02,
+                              bottom: _height * 0.00,
                             ),
                             child: Container(
                               height: _height * 0.1,
@@ -386,6 +386,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+                  Padding(
+                    padding: EdgeInsets.all(_height * 0.002),
+                    child: Visibility(
+                      visible: _isLoading,
+                      child: const Center(
+                        child: CupertinoActivityIndicator(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: (){
                       handleLoginUser();
@@ -415,6 +426,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
+
                   GestureDetector(
                     onTap: (){
                       Transitioner(
@@ -451,19 +463,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: _height * 0.03),
-                    child: Visibility(
-                      visible: _isLoading,
-                      child: const Center(
-                        child: CupertinoActivityIndicator(
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
+
                   SizedBox(
-                    height: _height * 0.01,
+                    height: _height * 0.013,
                   )
                 ],
               ),
@@ -618,7 +620,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   sendUserInfo() async {
     _firestore
-        .collection("User")
+        .collection("RegisterUser")
         .doc(firebaseUuid).set({
       "user_email": _controllerEmail!.text.trim().toString(),
       "user_name": _nameController!.text.trim().toString(),

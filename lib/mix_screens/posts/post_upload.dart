@@ -58,7 +58,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     _descriptionController = new TextEditingController();
     _phoneController = TextEditingController();
     _generateUniqueIDs();
-    _firebaseUniqueIDs();
+    // _firebaseUniqueIDs();
   }
 
   @override
@@ -395,10 +395,10 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     print("UniqueID: $UniqueIDs");
   }
 
-  _firebaseUniqueIDs() async{
-    firebaseUuid = await FirebaseAuth.instance.currentUser!.uid;
-    print("firebaseUuid: $firebaseUuid");
-  }
+  // _firebaseUniqueIDs() async{
+  //   firebaseUuid = await FirebaseAuth.instance.currentUser!.email;
+  //   print("firebaseUuid: $firebaseUuid");
+  // }
 
   sendPost() async {
     setState(() {
@@ -408,9 +408,9 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
         .collection("Home")
         .doc("Upload")
         .collection("data")
-        .doc(firebaseUuid!+UniqueIDs).set({
+        .doc(FirebaseAuth.instance.currentUser!.email!+UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),
-      "post_id": firebaseUuid!+UniqueIDs,
+      "post_id": FirebaseAuth.instance.currentUser!.email!+UniqueIDs,
       "title": _bookTitleController!.text.trim().toString(),
       "time": DateTime.now().millisecondsSinceEpoch,
       "url": imageUrl,
@@ -426,11 +426,11 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   userPost() async {
     _firestore
         .collection("User")
-        .doc(firebaseUuid)
+        .doc(FirebaseAuth.instance.currentUser!.email)
         .collection("data")
-        .doc(firebaseUuid!+UniqueIDs).set({
+        .doc(FirebaseAuth.instance.currentUser!.email!+UniqueIDs).set({
       "description": _descriptionController!.text.trim().toString(),
-      "post_id": firebaseUuid!+UniqueIDs,
+      "post_id": FirebaseAuth.instance.currentUser!.email!+UniqueIDs,
       "title": _bookTitleController!.text.trim().toString(),
       "time": DateTime.now().millisecondsSinceEpoch,
       "url": imageUrl,
