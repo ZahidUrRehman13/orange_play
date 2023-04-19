@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:path_provider/path_provider.dart';
@@ -16,6 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transitioner/transitioner.dart';
 import 'package:uuid/uuid.dart';
+import '../../ad_helper.dart';
 import '../../constants_services/colors_class.dart';
 import '../../providers/user_provider.dart';
 import '../../menu_screens/home_screens.dart';
@@ -44,6 +46,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
   String? firebaseUuid;
   var uuid;
   Stream? stream;
+  BannerAd? _bannerAd;
 
 
   TextEditingController? _bookTitleController;
@@ -58,6 +61,7 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     _descriptionController = new TextEditingController();
     _phoneController = TextEditingController();
     _generateUniqueIDs();
+    _loadAds();
     // _firebaseUniqueIDs();
   }
 
@@ -66,7 +70,27 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
     _bookTitleController!.dispose();
     _descriptionController!.dispose();
     _phoneController!.dispose();
+    _bannerAd?.dispose();
     super.dispose();
+  }
+
+  _loadAds() {
+    BannerAd(
+      adUnitId: AdHelper.bannerAdUnitId,
+      request: AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _bannerAd = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          ad.dispose();
+        },
+      ),
+    ).load();
   }
 
 
@@ -334,6 +358,16 @@ class _AdvertisementPageState extends State<AdvertisementPage> {
                   SizedBox(
                     height: height * 0.02,
                   ),
+                  _bannerAd != null
+                      ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      width: _bannerAd!.size.width.toDouble(),
+                      height: _bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerAd!),
+                    ),
+                  )
+                      : Container()
                 ],
               ),
             ),

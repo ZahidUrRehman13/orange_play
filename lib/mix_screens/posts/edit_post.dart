@@ -27,50 +27,6 @@ class _EditPostsState extends State<EditPosts> {
   Stream? stream;
   String? UniqueIDs;
   String? firebaseUuid;
-  InterstitialAd? _interstitialAd;
-
-  @override
-  void initState() {
-    // _firebaseUniqueIDs();
-    _loadInterstitialAd();
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _interstitialAd?.dispose();
-    super.dispose();
-  }
-
-  void _loadInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: AdHelper.interstitialAdUnitId,
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
-              Transitioner(
-                context: context,
-                child: HomeScreen(),
-                animation: AnimationType.slideLeft, // Optional value
-                duration: Duration(milliseconds: 1000), // Optional value
-                replacement: false, // Optional value
-                curveType: CurveType.decelerate, // Optional value
-              );
-            },
-          );
-
-          setState(() {
-            _interstitialAd = ad;
-          });
-        },
-        onAdFailedToLoad: (err) {
-          print('Failed to load an interstitial ad: ${err.message}');
-        },
-      ),
-    );
-  }
 
   // _firebaseUniqueIDs() async{
   //   firebaseUuid = await FirebaseAuth.instance.currentUser!.email;
@@ -131,33 +87,29 @@ class _EditPostsState extends State<EditPosts> {
                       itemBuilder: (_, index) {
                         return GestureDetector(
                           onTap: () {
-
-                            _loadInterstitialAd();
-                            if (_interstitialAd != null) {
-                              _interstitialAd?.show();
-                            } else {
                               Transitioner(
                                 context: context,
                                 child: EditPostDetails(
                                   imageUrlE: snapshot.data.docs[index]['url'],
                                   description: snapshot.data.docs[index]
-                                  ['description'],
+                                      ['description'],
                                   jobTitle: snapshot.data.docs[index]['title'],
                                   timePublished: snapshot.data.docs[index]
-                                  ['time'],
+                                      ['time'],
                                   phone: snapshot.data.docs[index]['phone'],
-                                  postedBy: snapshot.data.docs[index]['postedby'],
+                                  postedBy: snapshot.data.docs[index]
+                                      ['postedby'],
                                   chatId: snapshot.data.docs[index]['chat_id'],
                                   postId: snapshot.data.docs[index]['post_id'],
                                 ),
                                 animation:
-                                AnimationType.slideLeft, // Optional value
+                                    AnimationType.slideLeft, // Optional value
                                 duration: Duration(
                                     milliseconds: 1000), // Optional value
                                 replacement: false, // Optional value
-                                curveType: CurveType.decelerate, // Optional value
+                                curveType:
+                                    CurveType.decelerate, // Optional value
                               );
-                            }
                           },
                           child: Column(
                             children: [
@@ -240,13 +192,12 @@ class _EditPostsState extends State<EditPosts> {
                       ),
                     )
               : Center(
-                child: CupertinoActivityIndicator(
-                  color: Colors.black,
-                ),
-              );
+                  child: CupertinoActivityIndicator(
+                    color: Colors.black,
+                  ),
+                );
         },
       ),
     );
   }
-
 }

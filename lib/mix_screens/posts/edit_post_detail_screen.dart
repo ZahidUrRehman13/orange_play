@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -21,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:transitioner/transitioner.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
+import '../../ad_helper.dart';
 import '../../constants_services/colors_class.dart';
 import '../../menu_screens/home_screens.dart';
 import '../../providers/user_provider.dart';
@@ -68,10 +70,12 @@ class _EditPostDetailsState extends State<EditPostDetails> {
   TextEditingController? _descriptionController;
   TextEditingController? _phoneController;
   TextEditingController? _titleController;
+  InterstitialAd? _interstitialAd;
 
   @override
   void initState() {
     super.initState();
+    _loadInterstitialAd();
     _descriptionController = new TextEditingController();
     _phoneController = new TextEditingController();
     _titleController = new TextEditingController();
@@ -84,7 +88,40 @@ class _EditPostDetailsState extends State<EditPostDetails> {
   void dispose() {
     _descriptionController!.dispose();
     _phoneController!.dispose();
+    _interstitialAd?.dispose();
     super.dispose();
+  }
+
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId: AdHelper.interstitialAdUnitId,
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          ad.fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (ad) {
+              Transitioner(
+                context: context,
+                child:  HomeScreen(
+                ),
+                animation: AnimationType.slideLeft, // Optional value
+                duration: Duration(milliseconds: 1000), // Optional value
+                replacement: true, // Optional value
+                curveType: CurveType.decelerate, // Optional value
+              );
+            },
+          );
+
+          setState(() {
+            _interstitialAd = ad;
+          });
+        },
+        onAdFailedToLoad: (err) {
+          print('Failed to load an interstitial ad: ${err.message}');
+        },
+      ),
+    );
   }
 
   @override
@@ -434,15 +471,21 @@ class _EditPostDetailsState extends State<EditPostDetails> {
       // "url": imageUrl,
       "phone": _phoneController!.text.trim().toString(),
     });
-
-    Transitioner(
-      context: context,
-      child: const HomeScreen(),
-      animation: AnimationType.slideLeft, // Optional value
-      duration: const Duration(milliseconds: 1000), // Optional value
-      replacement: true, // Optional value
-      curveType: CurveType.decelerate, // Optional value
+    _loadInterstitialAd(
     );
+    if (_interstitialAd != null) {
+      _interstitialAd?.show();
+    } else {
+      Transitioner(
+        context: context,
+        child: const HomeScreen(),
+        animation: AnimationType.fadeIn, // Optional value
+        duration: const Duration(milliseconds: 1000), // Optional value
+        replacement: true, // Optional value
+        curveType: CurveType.decelerate, // Optional value
+      );
+    }
+
   }
 
   deletePost() async {
@@ -461,14 +504,21 @@ class _EditPostDetailsState extends State<EditPostDetails> {
         .doc(widget.postId)
         .delete();
 
-    Transitioner(
-      context: context,
-      child: const HomeScreen(),
-      animation: AnimationType.slideLeft, // Optional value
-      duration: const Duration(milliseconds: 1000), // Optional value
-      replacement: true, // Optional value
-      curveType: CurveType.decelerate, // Optional value
+    _loadInterstitialAd(
     );
+    if (_interstitialAd != null) {
+      _interstitialAd?.show();
+    } else {
+      Transitioner(
+        context: context,
+        child: const HomeScreen(),
+        animation: AnimationType.fadeIn, // Optional value
+        duration: const Duration(milliseconds: 1000), // Optional value
+        replacement: true, // Optional value
+        curveType: CurveType.decelerate, // Optional value
+      );
+    }
+
   }
 
 

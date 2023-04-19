@@ -188,9 +188,8 @@ class _PostDetailsState extends State<PostDetails> {
 
                           return snapshot.hasData && snapshot.data!.exists
                               ? CircleAvatar(
-                            radius: height*width*0.000045,
-                            backgroundColor: const Color(0xff3a6c83),
-                            // child: CircleAvatar(
+                            radius: height*width*0.000048,
+                            backgroundColor:  Colors.white,
                             //   backgroundImage: NetworkImage(snapshot
                             //       .data!["profile_image_url"]
                             //       .toString()),

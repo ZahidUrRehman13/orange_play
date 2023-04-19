@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:transitioner/transitioner.dart';
 import 'package:uuid/uuid.dart';
+import '../Authentications/login_screen.darts.dart';
 import '../constants_services/colors_class.dart';
 import '../providers/user_provider.dart';
 import 'dart:io';
@@ -78,6 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   initFirebase()async{
 
     user = await FirebaseAuth.instance.currentUser;
+
     _emailController!.text=FirebaseAuth.instance.currentUser!.email.toString();
 
   }

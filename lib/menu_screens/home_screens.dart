@@ -48,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return d12;
   }
 
-
   _listener() {
     stream = _firestore
         .collection("Home")
@@ -61,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
       print(data.size);
     });
   }
-
 
   sendNotificationsCount() async {
     _firestore
@@ -77,6 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     _listener();
+    print("email ${context.read<UserProvider>().UserEmail.toString()}");
     super.initState();
   }
 
@@ -88,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AllColors.mainColor,
       appBar: AppBar(
-        title:  Text("Home",
+        title: Text(
+          "Home",
           style: TextStyle(
             fontFamily: 'Poppins',
             color: Color(0xFFe4e6fb),
@@ -96,10 +96,20 @@ class _HomeScreenState extends State<HomeScreen> {
             fontWeight: FontWeight.w800,
             fontStyle: FontStyle.normal,
           ),
-          textAlign: TextAlign.end,),
-        leading: SizedBox(
-          height: height*0.05,
-            child: Image.asset("assets/images/icon-removebg-preview.png")),
+          textAlign: TextAlign.end,
+        ),
+        leading: Container(
+          height: height * 0.02,
+          width: width * 0.01,
+          child: Container(
+            height: height * 0.01,
+            width: width * 0.01,
+            child: Image.asset(
+              "assets/images/app_bar_2.png",
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
         centerTitle: true,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -151,11 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               .doc("Notifications")
                               .snapshots(),
                           builder: (context, snapshot) {
-
                             return snapshot.hasData && snapshot.data!.exists
                                 ? Text(snapshot.data!["count"].toString())
                                 : Text("0");
-
                           }),
                     ),
                   )),
@@ -194,38 +202,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       GestureDetector(
                           onTap: () {
-                            if (context
-                                        .read<UserProvider>()
-                                        .UserEmail
-                                        .toString() !=
-                                    "" ||
-                                context
-                                    .read<UserProvider>()
-                                    .UserEmail
-                                    .toString()
-                                    .isNotEmpty) {
-                              Transitioner(
-                                context: context,
-                                child: const AdvertisementPage(),
-                                animation:
-                                    AnimationType.slideLeft, // Optional value
-                                duration: const Duration(
-                                    milliseconds: 1000), // Optional value
-                                replacement: false, // Optional value
-                                curveType:
-                                    CurveType.decelerate, // Optional value
-                              );
-                            } else {
+                            if (context.read<UserProvider>().UserEmail == "" ||
+                                context.read<UserProvider>().UserEmail ==
+                                    null) {
                               Transitioner(
                                 context: context,
                                 child: const LoginScreen(),
                                 animation:
-                                    AnimationType.slideLeft, // Optional value
+                                AnimationType.slideLeft, // Optional value
                                 duration: const Duration(
                                     milliseconds: 1000), // Optional value
                                 replacement: false, // Optional value
                                 curveType:
-                                    CurveType.decelerate, // Optional value
+                                CurveType.decelerate, // Optional value
+                              );
+                            } else {
+
+                              Transitioner(
+                                context: context,
+                                child: const AdvertisementPage(),
+                                animation:
+                                AnimationType.slideLeft, // Optional value
+                                duration: const Duration(
+                                    milliseconds: 1000), // Optional value
+                                replacement: false, // Optional value
+                                curveType:
+                                CurveType.decelerate, // Optional value
                               );
                             }
                           },
@@ -260,16 +262,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemBuilder: (_, index) {
                           return GestureDetector(
                             onTap: () {
-                              if (context
-                                          .read<UserProvider>()
-                                          .UserEmail
-                                          .toString() !=
-                                      "" ||
+                              if (context.read<UserProvider>().UserEmail == "" ||
                                   context
                                       .read<UserProvider>()
-                                      .UserEmail
-                                      .toString()
-                                      .isNotEmpty) {
+                                      .UserEmail == null
+                              ) {
+                                Transitioner(
+                                  context: context,
+                                  child: const LoginScreen(),
+                                  animation:
+                                  AnimationType.slideLeft, // Optional value
+                                  duration: const Duration(
+                                      milliseconds: 1000), // Optional value
+                                  replacement: false, // Optional value
+                                  curveType:
+                                  CurveType.decelerate, // Optional value
+                                );
+                              } else {
+
                                 _Views(
                                     snapshot.data.docs[index]['views'],
                                     snapshot.data.docs[index]['post_id']
@@ -279,154 +289,82 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: PostDetails(
                                     imageUrl: snapshot.data.docs[index]['url'],
                                     description: snapshot.data.docs[index]
-                                        ['description'],
+                                    ['description'],
                                     jobTitle: snapshot.data.docs[index]
-                                        ['title'],
+                                    ['title'],
                                     timePublished: snapshot.data.docs[index]
-                                        ['time'],
+                                    ['time'],
                                     phone: snapshot.data.docs[index]['phone'],
                                     postedBy: snapshot.data.docs[index]
-                                        ['postedby'],
+                                    ['postedby'],
                                     chatId: snapshot.data.docs[index]
-                                        ['chat_id'],
+                                    ['chat_id'],
                                   ),
                                   animation:
-                                      AnimationType.slideLeft, // Optional value
+                                  AnimationType.slideLeft, // Optional value
                                   duration: Duration(
                                       milliseconds: 1000), // Optional value
                                   replacement: false, // Optional value
                                   curveType:
-                                      CurveType.decelerate, // Optional value
-                                );
-                              } else {
-                                Transitioner(
-                                  context: context,
-                                  child: const LoginScreen(),
-                                  animation:
-                                      AnimationType.slideLeft, // Optional value
-                                  duration: const Duration(
-                                      milliseconds: 1000), // Optional value
-                                  replacement: false, // Optional value
-                                  curveType:
-                                      CurveType.decelerate, // Optional value
+                                  CurveType.decelerate, // Optional value
                                 );
                               }
                             },
                             child: Column(
                               children: [
-                                Stack(
+                                Column(
                                   children: [
-                                    Positioned(
-                                      child: Container(
-                                        height: height * 0.4,
-                                        width: width,
-                                        // decoration: BoxDecoration(
-                                        //     // borderRadius: BorderRadius.circular(5),
-                                        //     image: DecorationImage(
-                                        //         image: NetworkImage(snapshot
-                                        //             .data.docs[index]['url']),
-                                        //         fit: BoxFit.fill)),
-                                        child: CachedNetworkImage(
-                                          filterQuality:
-                                          FilterQuality.high,
-                                          imageBuilder: (context,
-                                              imageProvider) =>
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.rectangle,
-                                                  borderRadius:
-                                                  BorderRadius.circular(
-                                                      0),
-                                                  image: DecorationImage(
-                                                      image: imageProvider,
-                                                      fit: BoxFit.cover),
-                                                ),
-                                              ),
-                                          imageUrl:snapshot
-                                              .data.docs[index]['url'],
-                                          fit: BoxFit.cover,
-                                          placeholder: (context,
-                                              url) =>
-                                          const Center(
-                                              child:
-                                              CupertinoActivityIndicator(
-                                                color:
-                                                Colors.black,
-                                              )),
-                                          errorWidget: (context,
-                                              url, error) =>
-                                          const Center(
-                                              child: Icon(Icons
-                                                  .error_outline)),
+                                    Container(
+                                      height: height * 0.3,
+                                      width: width,
+                                      // decoration: BoxDecoration(
+                                      //     // borderRadius: BorderRadius.circular(5),
+                                      //     image: DecorationImage(
+                                      //         image: NetworkImage(snapshot
+                                      //             .data.docs[index]['url']),
+                                      //         fit: BoxFit.fill)),
+                                      child: CachedNetworkImage(
+                                        filterQuality: FilterQuality.high,
+                                        imageBuilder:
+                                            (context, imageProvider) =>
+                                                Container(
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.rectangle,
+                                            borderRadius:
+                                                BorderRadius.circular(0),
+                                            image: DecorationImage(
+                                                image: imageProvider,
+                                                fit: BoxFit.cover),
+                                          ),
                                         ),
+                                        imageUrl: snapshot.data.docs[index]
+                                            ['url'],
+                                        fit: BoxFit.cover,
+                                        placeholder: (context, url) =>
+                                            const Center(
+                                                child:
+                                                    CupertinoActivityIndicator(
+                                          color: Colors.black,
+                                        )),
+                                        errorWidget: (context, url, error) =>
+                                            const Center(
+                                                child:
+                                                    Icon(Icons.error_outline)),
                                       ),
                                     ),
-                                    Positioned(
-                                        top: height * 0.365,
-                                        left: width * 0.88,
-                                        child: Container(
-                                            width: width * 0.1,
-                                            height: height * 0.03,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(3)),
-                                                border: Border.all(
-                                                    color: Colors.white,
-                                                    width: 1),
-                                                color: Color(0xff4a54be)),
-                                            child: Center(
-                                                child: Text(
-                                              "${snapshot.data.docs[index]['likes']} likes",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 9),
-                                            )))),
-                                    Positioned(
-                                        top: height * 0.365,
-                                        left: width * 0.03,
-                                        child: Container(
-                                            width: width * 0.15,
-                                            height: height * 0.03,
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(30)),
-                                              border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 1),
-                                              gradient: const LinearGradient(
-                                                  begin: Alignment(
-                                                      -0.03018629550933838,
-                                                      -0.02894212305545807),
-                                                  end: Alignment(
-                                                      1.3960868120193481,
-                                                      1.4281718730926514),
-                                                  colors: [
-                                                    Color(0xff1a51ba),
-                                                    Color(0xff48bc11)
-                                                  ]),
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Icon(
-                                                  Icons.remove_red_eye,
-                                                  size:
-                                                      height * width * 0.00006,
-                                                  color: Colors.red,
-                                                ),
-                                                SizedBox(
-                                                  width: width * 0.01,
-                                                ),
-                                                Text(
-                                                  "${snapshot.data.docs[index]['views']}",
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontSize: 12),
-                                                ),
-                                              ],
-                                            )))
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: Container(
+                                          width: 427.5,
+                                          height: 1,
+                                          decoration: BoxDecoration(
+                                              color: Colors.black)),
+                                    )
                                   ],
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -500,8 +438,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                             width: width * 0.02,
                                           ),
                                           GestureDetector(
-                                            onTap: (){
-                                              Share.share('https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
+                                            onTap: () {
+                                              Share.share(
+                                                  'https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
                                             },
                                             child: Container(
                                                 width: width * 0.1,
@@ -519,13 +458,87 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         color: const Color(
                                                             0xff3a6c83),
                                                         width: 2),
-                                                    color: AllColors.mainColor)),
+                                                    color:
+                                                        AllColors.mainColor)),
                                           ),
                                         ],
                                       )
                                     ],
                                   ),
                                 ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                Container(
+                                    width: width,
+                                    height: 1,
+                                    decoration:
+                                        BoxDecoration(color: Colors.black)),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              Icons.favorite_outline_outlined,
+                                              size: width * 0.05,
+                                            )),
+                                        Text(
+                                          "${snapshot.data.docs[index]['likes']} Likes",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              Icons.remove_red_eye,
+                                              size: width * 0.05,
+                                            )),
+                                        Text(
+                                          "${snapshot.data.docs[index]['views']} Views",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              Icons.mobile_screen_share,
+                                              size: width * 0.05,
+                                            )),
+                                        Text(
+                                          "${snapshot.data.docs[index]['likes']} Share",
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 13),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                    width: width,
+                                    height: 1,
+                                    decoration:
+                                        BoxDecoration(color: Colors.black)),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
@@ -538,12 +551,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                   opacity: 0.5,
                                   child: Container(
                                       width: 427.5,
-                                      height: 1,
+                                      height: height * 0.02,
                                       decoration: BoxDecoration(
                                           color: const Color(0xffbcbcbc))),
                                 ),
                                 SizedBox(
-                                  height: height * 0.03,
+                                  height: height * 0.05,
                                 )
                               ],
                             ),
@@ -602,27 +615,23 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: null,
             child: const Icon(Icons.edit),
             onPressed: () {
-              if (context.read<UserProvider>().UserEmail.toString() != "" ||
-                  context
-                      .read<UserProvider>()
-                      .UserEmail
-                      .toString()
-                      .isNotEmpty) {
+              if (context.read<UserProvider>().UserEmail == "" ||
+                  context.read<UserProvider>().UserEmail == null) {
                 Transitioner(
                   context: context,
-                  child: EditPosts(),
+                  child: const LoginScreen(),
                   animation: AnimationType.slideLeft, // Optional value
-                  duration: Duration(milliseconds: 1000), // Optional value
+                  duration:
+                      const Duration(milliseconds: 1000), // Optional value
                   replacement: false, // Optional value
                   curveType: CurveType.decelerate, // Optional value
                 );
               } else {
                 Transitioner(
                   context: context,
-                  child: const LoginScreen(),
+                  child: EditPosts(),
                   animation: AnimationType.slideLeft, // Optional value
-                  duration:
-                  const Duration(milliseconds: 1000), // Optional value
+                  duration: Duration(milliseconds: 1000), // Optional value
                   replacement: false, // Optional value
                   curveType: CurveType.decelerate, // Optional value
                 );
@@ -634,7 +643,8 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: null,
             child: const Icon(Icons.share),
             onPressed: () {
-              Share.share('https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
+              Share.share(
+                  'https://play.google.com/store/apps/details?id=com.orange.play.orange_play');
             },
           ),
           FloatingActionButton.small(
@@ -642,12 +652,18 @@ class _HomeScreenState extends State<HomeScreen> {
             heroTag: null,
             child: const Icon(Icons.person_pin),
             onPressed: () {
-              if (context.read<UserProvider>().UserEmail.toString() != "" ||
-                  context
-                      .read<UserProvider>()
-                      .UserEmail
-                      .toString()
-                      .isNotEmpty) {
+              if (context.read<UserProvider>().UserEmail == "" ||
+                  context.read<UserProvider>().UserEmail == null) {
+                Transitioner(
+                  context: context,
+                  child: const LoginScreen(),
+                  animation: AnimationType.slideLeft, // Optional value
+                  duration:
+                  const Duration(milliseconds: 1000), // Optional value
+                  replacement: false, // Optional value
+                  curveType: CurveType.decelerate, // Optional value
+                );
+              } else {
                 Transitioner(
                   context: context,
                   child: ProfileScreen(),
@@ -656,16 +672,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   replacement: false, // Optional value
                   curveType: CurveType.decelerate, // Optional value
                 );
-              } else {
-                Transitioner(
-                  context: context,
-                  child: const LoginScreen(),
-                  animation: AnimationType.slideLeft, // Optional value
-                  duration:
-                      const Duration(milliseconds: 1000), // Optional value
-                  replacement: false, // Optional value
-                  curveType: CurveType.decelerate, // Optional value
-                );
+
               }
 
               // final state = key.currentState;
